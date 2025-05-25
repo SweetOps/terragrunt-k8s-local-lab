@@ -4,7 +4,6 @@
 # .tfstate files
 *.tfstate
 *.tfstate.*
-
 # Crash log files
 crash.log
 crash.*.log
@@ -35,3 +34,11 @@ override.tf.json
 # Ignore CLI configuration files
 .terraformrc
 terraform.rc
+
+# Ignore custom pathes
+*.lock.hcl
+local-storage/*
+.certs/*
+KUBECONFIG
+**/terragrunt_rendered.json
+tg-*-provider.tf
