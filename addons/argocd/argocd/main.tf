@@ -1,13 +1,16 @@
 locals {
+  hostname = "argocd.${var.domain}"
+
   metrics_defaults = {
     enabled = true
     serviceMonitor = {
       enabled = true
     }
   }
+
   values = {
     global = {
-      domain = "argocd.${var.domain}"
+      domain = local.hostname
     }
 
     fullnameOverride = "argocd"
@@ -46,14 +49,14 @@ locals {
         tls              = false
         hosts = [
           {
-            host  = "argocd.${var.domain}"
+            host  = local.hostname
             paths = ["/"]
           }
         ]
         extraTls = [
           {
-            secretName = "argocd.${var.domain}"
-            hosts      = ["argocd.${var.domain}"]
+            secretName = local.hostname
+            hosts      = [local.hostname]
           }
         ]
       }
