@@ -1,3 +1,4 @@
 output "url" {
-  value = "https://${local.hostname}"
+  value       = format("https://%s", local.hostname)
+  description = "The endpoint URL for the Trow registry."
 }
