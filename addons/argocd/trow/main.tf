@@ -1,8 +1,10 @@
 locals {
+  hostname = "trow.${var.domain}"
+
   values = {
     trow = {
       fullNameOverride = "trow"
-      domain           = "trow.${var.domain}"
+      domain           = local.hostname
     }
     ingress = {
       enabled = true
@@ -13,14 +15,14 @@ locals {
       ingressClassName = "nginx"
       hosts = [
         {
-          host  = "trow.${var.domain}"
+          host  = local.hostname
           paths = ["/"]
         }
       ]
       tls = [
         {
-          secretName = "trow.${var.domain}"
-          hosts      = ["trow.${var.domain}"]
+          secretName = local.hostname
+          hosts      = [local.hostname]
         }
       ]
     }
