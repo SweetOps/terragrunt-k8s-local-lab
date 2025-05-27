@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  validate:
+    name: Run terragrunt validate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate Terragrunt configuration ["initial_apply=true"]
+        uses: gruntwork-io/terragrunt-action@v2
+        with:
+          tf_version: "1.12.1"
+          tg_version: "0.80.3"
+          tg_command: "run validate --feature initial_apply=true --all"
+
+      - name: Validate Terragrunt configuration
+        uses: gruntwork-io/terragrunt-action@v2
+        with:
+          tf_version: "1.12.1"
+          tg_version: "0.80.3"
+          tg_command: "run validate --feature --all"
