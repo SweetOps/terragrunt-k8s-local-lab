@@ -26,4 +26,4 @@ jobs:
         with:
           tf_version: "1.12.1"
           tg_version: "0.80.3"
-          tg_command: "run validate --feature --all"
+          tg_command: "run validate --all"
