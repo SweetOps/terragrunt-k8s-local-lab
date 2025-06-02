@@ -26,16 +26,18 @@ locals {
     ]
   }
   helm = {
-    # cilium = {}
-    # argocd = {}
+    # cilium = {
+    #   enabled = true
+    #   inputs = {}
+    # }
   }
 
   argocd = {
     cert_manager = {
-      tls_crt = fileexists(local.ca_cert_path) ? base64encode(file(local.ca_cert_path)) : "ci"
-      tls_key = fileexists(local.key_cert_path) ? base64encode(file(local.key_cert_path)) : "ci"
+      inputs = {
+        tls_crt = fileexists(local.ca_cert_path) ? base64encode(file(local.ca_cert_path)) : "ci"
+        tls_key = fileexists(local.key_cert_path) ? base64encode(file(local.key_cert_path)) : "ci"
+      }
     }
-    # ingress_nginx = {}
-    # argocd        = {}
   }
 }

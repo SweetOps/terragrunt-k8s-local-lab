@@ -21,4 +21,9 @@ dependency "prometheus_operator_crds" {
   skip_outputs = true
 }
 
-inputs = try(local.inputs.locals.argocd.ingress_nginx, {})
+inputs = try(local.inputs.locals.argocd.ingress_nginx.inputs, {})
+
+exclude {
+  if      = feature.initial_apply.value || !try(local.inputs.locals.argocd.ingress_nginx.enabled, true)
+  actions = ["all"]
+}

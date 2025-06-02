@@ -26,4 +26,9 @@ dependency "cilium_lb" {
   skip_outputs = true
 }
 
-inputs = try(local.inputs.locals.helm.argocd, {})
+inputs = try(local.inputs.locals.helm.argocd.inputs, {})
+
+exclude {
+  if      = !feature.initial_apply.value || !try(local.inputs.locals.helm.argocd.enabled, true)
+  actions = ["all"]
+}

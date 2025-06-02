@@ -21,4 +21,9 @@ dependency "prometheus_operator_crds" {
   skip_outputs = true
 }
 
-inputs = try(local.inputs.locals.argocd.cert_manager, {})
+inputs = try(local.inputs.locals.argocd.cert_manager.inputs, {})
+
+exclude {
+  if      = feature.initial_apply.value || !try(local.inputs.locals.argocd.cert_manager.enabled, true)
+  actions = ["all"]
+}

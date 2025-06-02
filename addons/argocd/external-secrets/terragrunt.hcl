@@ -47,6 +47,11 @@ inputs = (
       vault_url        = dependency.vault.outputs.internal_url
       vault_token      = dependency.vault.outputs.token
     },
-    try(local.inputs.locals.argocd.external_secrets, {})
+    try(local.inputs.locals.argocd.external_secrets.inputs, {})
   )
 )
+
+exclude {
+  if      = feature.initial_apply.value || !try(local.inputs.locals.argocd.external_secrets.enabled, true)
+  actions = ["all"]
+}

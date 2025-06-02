@@ -16,4 +16,9 @@ dependency "k8s" {
   }
 }
 
-inputs = try(local.inputs.locals.argocd.local_path_storage, {})
+inputs = try(local.inputs.locals.argocd.local_path_storage.inputs, {})
+
+exclude {
+  if      = feature.initial_apply.value || !try(local.inputs.locals.argocd.local_path_storage.enabled, true)
+  actions = ["all"]
+}

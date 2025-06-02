@@ -36,4 +36,9 @@ dependency "local_path_provisioner" {
   skip_outputs = true
 }
 
-inputs = try(local.inputs.locals.argocd.trow, {})
+inputs = try(local.inputs.locals.argocd.trow.inputs, {})
+
+exclude {
+  if      = feature.initial_apply.value || !try(local.inputs.locals.argocd.trow.enabled, true)
+  actions = ["all"]
+}

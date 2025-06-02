@@ -66,5 +66,10 @@ inputs = merge(
     cluster_secret_store_name = dependency.external_secrets.outputs.cluster_secret_store_name
     vault_mount_path          = dependency.external_secrets.outputs.vault_mount_path
   },
-  try(local.inputs.locals.argocd.minio_tenant, {})
+  try(local.inputs.locals.argocd.vm_stack.inputs, {})
 )
+
+exclude {
+  if      = feature.initial_apply.value || !try(local.inputs.locals.argocd.vm_stack.enabled, true)
+  actions = ["all"]
+}

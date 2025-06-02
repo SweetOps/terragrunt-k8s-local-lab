@@ -21,4 +21,9 @@ dependency "prometheus_operator_crds" {
   skip_outputs = true
 }
 
-inputs = try(local.inputs.locals.argocd.cassandra_operator, {})
+inputs = try(local.inputs.locals.argocd.cassandra_operator.inputs, {})
+
+exclude {
+  if      = feature.initial_apply.value || !try(local.inputs.locals.argocd.cassandra_operator.enabled, true)
+  actions = ["all"]
+}
