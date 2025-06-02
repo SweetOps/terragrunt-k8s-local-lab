@@ -1,3 +1,5 @@
+[![CI](https://github.com/SweetOps/terragrunt-k8s-local-lab/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/SweetOps/terragrunt-k8s-local-lab/actions/workflows/ci.yml)
+
 # Setup on macOS
 
 This guide will walk you through setting up a local Kubernetes cluster with custom DNS resolution, TLS certificates, and Docker network connectivity on macOS.
