@@ -2,7 +2,7 @@
 
 # Setup on macOS
 
-This guide will walk you through setting up a local Kubernetes cluster with custom DNS resolution, TLS certificates, and Docker network connectivity on macOS.
+Set up a local Kubernetes cluster with custom DNS resolution, TLS certificates, and Docker network connectivity.
 
 ---
 
