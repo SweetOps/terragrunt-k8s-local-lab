@@ -71,7 +71,7 @@ The deployment process consists of two stages:
 Run the following to create the Kubernetes cluster and install Cilium:
 
 ```sh
-terragrunt run validate --feature initial_apply=true --all
+terragrunt run apply --feature initial_apply=true --all
 ```
 
 ### 2. Deploy Kubernetes Add-ons
@@ -79,5 +79,5 @@ terragrunt run validate --feature initial_apply=true --all
 Once the cluster is ready, deploy the required add-ons:
 
 ```sh
-terragrunt run validate --all
+terragrunt run apply --all
 ```
