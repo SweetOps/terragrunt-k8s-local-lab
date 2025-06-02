@@ -2,11 +2,6 @@ feature "initial_apply" {
   default = false
 }
 
-exclude {
-  if      = feature.initial_apply.value
-  actions = ["all"]
-}
-
 generate "provider" {
   path      = "tg-argocd-provider.tf"
   if_exists = "overwrite_terragrunt"

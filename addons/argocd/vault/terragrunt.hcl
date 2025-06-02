@@ -47,5 +47,10 @@ inputs = merge(
   {
     cluster_issuer_name = dependency.cert_manager.outputs.cluster_issuer_name
   },
-  try(local.inputs.locals.argocd.vault, {})
+  try(local.inputs.locals.argocd.vault.inputs, {})
 )
+
+exclude {
+  if      = feature.initial_apply.value || !try(local.inputs.locals.argocd.vault.enabled, true)
+  actions = ["all"]
+}

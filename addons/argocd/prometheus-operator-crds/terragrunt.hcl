@@ -16,4 +16,9 @@ include "root" {
   path = find_in_parent_folders("root.hcl")
 }
 
-inputs = try(local.inputs.locals.argocd.prometheus_operator_crds, {})
+inputs = try(local.inputs.locals.argocd.prometheus_operator_crds.inputs, {})
+
+exclude {
+  if      = feature.initial_apply.value || !try(local.inputs.locals.argocd.prometheus_operator_crds.enabled, true)
+  actions = ["all"]
+}

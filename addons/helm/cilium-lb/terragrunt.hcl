@@ -31,5 +31,10 @@ inputs = merge(
     k8s_pod_subnet      = dependency.k8s.outputs.pod_subnet
     k8s_cluster_name    = dependency.k8s.outputs.cluster_name
   },
-  try(local.inputs.locals.helm.cilium_lb, {}),
+  try(local.inputs.locals.helm.cilium_lb.inputs, {}),
 )
+
+exclude {
+  if      = !feature.initial_apply.value || !try(local.inputs.locals.helm.cilium_lb.enabled, true)
+  actions = ["all"]
+}

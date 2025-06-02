@@ -26,4 +26,9 @@ dependency "cert_manager" {
   skip_outputs = true
 }
 
-inputs = try(local.inputs.locals.argocd.vm_operator, {})
+inputs = try(local.inputs.locals.argocd.vm_operator.inputs, {})
+
+exclude {
+  if      = feature.initial_apply.value || !try(local.inputs.locals.argocd.vm_operator.enabled, true)
+  actions = ["all"]
+}

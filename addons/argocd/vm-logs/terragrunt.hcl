@@ -53,5 +53,10 @@ inputs = merge(
   {
     cluster_issuer_name = dependency.cert_manager.outputs.cluster_issuer_name
   },
-  try(local.inputs.locals.argocd.vm_logs, {})
+  try(local.inputs.locals.argocd.vm_logs.inputs, {})
 )
+
+exclude {
+  if      = feature.initial_apply.value || !try(local.inputs.locals.argocd.vm_logs.enabled, true)
+  actions = ["all"]
+}
