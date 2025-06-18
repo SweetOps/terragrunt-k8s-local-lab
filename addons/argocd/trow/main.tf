@@ -9,7 +9,7 @@ locals {
     ingress = {
       enabled = true
       annotations = {
-        "cert-manager.io/cluster-issuer"              = "own"
+        "cert-manager.io/cluster-issuer"              = var.cluster_issuer_name
         "nginx.ingress.kubernetes.io/proxy-body-size" = "0"
       }
       ingressClassName = "nginx"

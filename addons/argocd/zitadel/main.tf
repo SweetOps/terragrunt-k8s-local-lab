@@ -56,7 +56,7 @@ locals {
         name = "ZITADEL_DATABASE_POSTGRES_HOST"
         valueFrom = {
           secretKeyRef = {
-            name = "zitadel-postgres-cluster-app"
+            name = "${var.postgres_cluster_name}-cluster-app"
             key  = "host"
           }
         }
@@ -65,7 +65,7 @@ locals {
         name = "ZITADEL_DATABASE_POSTGRES_PORT"
         valueFrom = {
           secretKeyRef = {
-            name = "zitadel-postgres-cluster-app"
+            name = "${var.postgres_cluster_name}-cluster-app"
             key  = "port"
           }
         }
@@ -74,7 +74,7 @@ locals {
         name = "ZITADEL_DATABASE_POSTGRES_DATABASE"
         valueFrom = {
           secretKeyRef = {
-            name = "zitadel-postgres-cluster-app"
+            name = "${var.postgres_cluster_name}-cluster-app"
             key  = "dbname"
           }
         }
@@ -83,7 +83,7 @@ locals {
         name = "ZITADEL_DATABASE_POSTGRES_USER_USERNAME"
         valueFrom = {
           secretKeyRef = {
-            name = "zitadel-postgres-cluster-app"
+            name = "${var.postgres_cluster_name}-cluster-app"
             key  = "username"
           }
         }
@@ -92,7 +92,7 @@ locals {
         name = "ZITADEL_DATABASE_POSTGRES_USER_PASSWORD"
         valueFrom = {
           secretKeyRef = {
-            name = "zitadel-postgres-cluster-app"
+            name = "${var.postgres_cluster_name}-cluster-app"
             key  = "password"
           }
         }
@@ -101,7 +101,7 @@ locals {
         name = "ZITADEL_DATABASE_POSTGRES_ADMIN_USERNAME"
         valueFrom = {
           secretKeyRef = {
-            name = "zitadel-postgres-cluster-superuser"
+            name = "${var.postgres_cluster_name}-cluster-superuser"
             key  = "username"
           }
         }
@@ -110,7 +110,7 @@ locals {
         name = "ZITADEL_DATABASE_POSTGRES_ADMIN_PASSWORD"
         valueFrom = {
           secretKeyRef = {
-            name = "zitadel-postgres-cluster-superuser"
+            name = "${var.postgres_cluster_name}-cluster-superuser"
             key  = "password"
           }
         }

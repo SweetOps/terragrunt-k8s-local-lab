@@ -110,3 +110,9 @@ variable "vault_mount_path" {
   default     = "dev"
   description = "Path to the vault mount"
 }
+
+variable "postgres_cluster_name" {
+  type        = string
+  default     = "zitadel-postgres"
+  description = "Name of the PostgreSQL cluster"
+}

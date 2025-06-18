@@ -1,5 +1,6 @@
 locals {
-  inputs = read_terragrunt_config(find_in_parent_folders("globals.hcl"))
+  inputs              = read_terragrunt_config(find_in_parent_folders("globals.hcl"))
+  static_dependencies = ["prometheus-operator-crds", "ingress-nginx", "local-path-provisioner"]
 }
 
 include "root" {
@@ -16,31 +17,18 @@ dependency "k8s" {
   }
 }
 
-dependency "prometheus_operator_crds" {
-  config_path  = "${get_path_to_repo_root()}/addons/argocd/prometheus-operator-crds"
-  skip_outputs = true
-}
-
-dependency "ingress_nginx" {
-  config_path  = "${get_path_to_repo_root()}/addons/argocd/ingress-nginx"
-  skip_outputs = true
-}
-
-dependency "argocd" {
-  config_path  = "${get_path_to_repo_root()}/addons/argocd/argocd"
-  skip_outputs = true
-}
-
-dependency "local_path_provisioner" {
-  config_path  = "${get_path_to_repo_root()}/addons/argocd/local-path-provisioner"
-  skip_outputs = true
-}
-
 dependency "cert_manager" {
   config_path = "${get_path_to_repo_root()}/addons/argocd/cert-manager"
   mock_outputs = {
     cluster_issuer_name = "test"
   }
+}
+
+dependencies {
+  paths = formatlist(
+    "${get_path_to_repo_root()}/addons/argocd/%s",
+    local.static_dependencies
+  )
 }
 
 inputs = merge(

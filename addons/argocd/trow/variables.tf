@@ -86,3 +86,9 @@ variable "domain" {
   default     = "k8s.dev.local"
   description = "Domain to use for the ingress"
 }
+
+variable "cluster_issuer_name" {
+  type        = string
+  default     = "own"
+  description = "Name of the cluster issuer"
+}
