@@ -1,5 +1,6 @@
 locals {
-  inputs = read_terragrunt_config(find_in_parent_folders("globals.hcl"))
+  inputs              = read_terragrunt_config(find_in_parent_folders("globals.hcl"))
+  static_dependencies = ["prometheus-operator-crds", "ingress-nginx", "external-secrets", "vm-operator", "vm-stack", "cert-manager"]
 }
 
 include "root" {
@@ -17,19 +18,11 @@ dependency "k8s" {
   }
 }
 
-dependency "prometheus_operator_crds" {
-  config_path  = "${get_path_to_repo_root()}/addons/argocd/prometheus-operator-crds"
-  skip_outputs = true
-}
-
-dependency "ingress_nginx" {
-  config_path  = "${get_path_to_repo_root()}/addons/argocd/ingress-nginx"
-  skip_outputs = true
-}
-
-dependency "external_secrets" {
-  config_path  = "${get_path_to_repo_root()}/addons/argocd/external-secrets"
-  skip_outputs = true
+dependencies {
+  paths = formatlist(
+    "${get_path_to_repo_root()}/addons/argocd/%s",
+    local.static_dependencies
+  )
 }
 
 dependency "cert_manager" {
@@ -37,16 +30,6 @@ dependency "cert_manager" {
   mock_outputs = {
     cluster_issuer_name = "test"
   }
-}
-
-dependency "vm_operator" {
-  config_path  = "${get_path_to_repo_root()}/addons/argocd/vm-operator"
-  skip_outputs = true
-}
-
-dependency "vm-stack" {
-  config_path  = "${get_path_to_repo_root()}/addons/argocd/vm-stack"
-  skip_outputs = true
 }
 
 inputs = merge(

@@ -1,6 +1,6 @@
 locals {
   inputs              = read_terragrunt_config(find_in_parent_folders("globals.hcl"))
-  static_dependencies = ["prometheus-operator-crds", "ingress-nginx", "cert-manager"]
+  static_dependencies = ["prometheus-operator-crds", "postgres-operator"]
 }
 
 include "root" {
@@ -14,6 +14,7 @@ dependency "k8s" {
     client_key             = "test_client_key"
     client_certificate     = "test_client_certificate"
     cluster_ca_certificate = "test_cluster_ca_certificate"
+    cluster_name           = "test"
   }
 }
 
@@ -24,9 +25,9 @@ dependencies {
   )
 }
 
-inputs = try(local.inputs.locals.argocd.vm_operator.inputs, {})
+inputs = try(local.inputs.locals.argocd.zitadel_postgres.inputs, {})
 
 exclude {
-  if      = feature.initial_apply.value || !try(local.inputs.locals.argocd.vm_operator.enabled, true)
+  if      = feature.initial_apply.value || !try(local.inputs.locals.argocd.zitadel_postgres.enabled, true) || !try(local.inputs.locals.argocd.zitadel.enabled, true)
   actions = ["all"]
 }

@@ -1,19 +1,19 @@
 variable "chart" {
   type        = string
   description = "The name of the chart to install"
-  default     = "trow"
+  default     = "zitadel"
 }
 
 variable "repository" {
   type        = string
   description = "The URL of the chart repository"
-  default     = "ghcr.io/trow-registry/charts"
+  default     = "https://charts.zitadel.com"
 }
 
 variable "chart_version" {
   type        = string
   description = "Specify the exact chart version to install. If this is not specified, the latest version is installed."
-  default     = "0.10.3"
+  default     = "8.13.4"
 }
 
 variable "override_values" {
@@ -25,7 +25,7 @@ variable "override_values" {
 variable "metadata" {
   type = object(
     {
-      name      = optional(string, "trow")
+      name      = optional(string, "")
       namespace = optional(string, "argocd")
     }
   )
@@ -37,7 +37,7 @@ variable "destination" {
   type = object(
     {
       server    = optional(string, "https://kubernetes.default.svc")
-      namespace = optional(string, "trow")
+      namespace = optional(string, "zitadel")
     }
   )
   default     = {}
@@ -46,7 +46,7 @@ variable "destination" {
 
 variable "wait" {
   type        = bool
-  default     = true
+  default     = false
   description = "Wait for the application to be healthy and synced"
 }
 
@@ -87,8 +87,32 @@ variable "domain" {
   description = "Domain to use for the ingress"
 }
 
+variable "k8s_cluster_name" {
+  type        = string
+  default     = "dev"
+  description = "Name of the Kubernetes cluster"
+}
+
+variable "cluster_secret_store_name" {
+  type        = string
+  default     = "vault"
+  description = "Name of the cluster secret store"
+}
+
 variable "cluster_issuer_name" {
   type        = string
   default     = "own"
   description = "Name of the cluster issuer"
+}
+
+variable "vault_mount_path" {
+  type        = string
+  default     = "dev"
+  description = "Path to the vault mount"
+}
+
+variable "postgres_cluster_name" {
+  type        = string
+  default     = "zitadel-postgres"
+  description = "Name of the PostgreSQL cluster"
 }

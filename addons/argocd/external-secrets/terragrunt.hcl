@@ -1,5 +1,6 @@
 locals {
-  inputs = read_terragrunt_config(find_in_parent_folders("globals.hcl"))
+  inputs              = read_terragrunt_config(find_in_parent_folders("globals.hcl"))
+  static_dependencies = ["prometheus-operator-crds"]
 }
 
 include "root" {
@@ -21,14 +22,11 @@ dependency "k8s" {
   }
 }
 
-dependency "prometheus_operator_crds" {
-  config_path  = "${get_path_to_repo_root()}/addons/argocd/prometheus-operator-crds"
-  skip_outputs = true
-}
-
 dependency "cert_manager" {
-  config_path  = "${get_path_to_repo_root()}/addons/argocd/cert-manager"
-  skip_outputs = true
+  config_path = "${get_path_to_repo_root()}/addons/argocd/cert-manager"
+  mock_outputs = {
+    cluster_issuer_name = "test"
+  }
 }
 
 dependency "vault" {
@@ -40,12 +38,20 @@ dependency "vault" {
   }
 }
 
+dependencies {
+  paths = formatlist(
+    "${get_path_to_repo_root()}/addons/argocd/%s",
+    local.static_dependencies
+  )
+}
+
 inputs = (
   merge(
     {
-      k8s_cluster_name = dependency.k8s.outputs.cluster_name
-      vault_url        = dependency.vault.outputs.internal_url
-      vault_token      = dependency.vault.outputs.token
+      cluster_issuer_name = dependency.cert_manager.outputs.cluster_issuer_name
+      k8s_cluster_name    = dependency.k8s.outputs.cluster_name
+      vault_url           = dependency.vault.outputs.internal_url
+      vault_token         = dependency.vault.outputs.token
     },
     try(local.inputs.locals.argocd.external_secrets.inputs, {})
   )

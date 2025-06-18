@@ -81,6 +81,12 @@ variable "retry" {
   description = "Retry policy for the application"
 }
 
+variable "cluster_issuer_name" {
+  type        = string
+  default     = "own"
+  description = "Name of the cluster issuer"
+}
+
 variable "k8s_cluster_name" {
   type        = string
   default     = "dev"

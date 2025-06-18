@@ -1,19 +1,19 @@
 variable "chart" {
   type        = string
   description = "The name of the chart to install"
-  default     = "trow"
+  default     = "cluster"
 }
 
 variable "repository" {
   type        = string
   description = "The URL of the chart repository"
-  default     = "ghcr.io/trow-registry/charts"
+  default     = "https://cloudnative-pg.github.io/charts"
 }
 
 variable "chart_version" {
   type        = string
   description = "Specify the exact chart version to install. If this is not specified, the latest version is installed."
-  default     = "0.10.3"
+  default     = "0.3.1"
 }
 
 variable "override_values" {
@@ -25,7 +25,7 @@ variable "override_values" {
 variable "metadata" {
   type = object(
     {
-      name      = optional(string, "trow")
+      name      = optional(string, "zitadel-postgres")
       namespace = optional(string, "argocd")
     }
   )
@@ -37,7 +37,7 @@ variable "destination" {
   type = object(
     {
       server    = optional(string, "https://kubernetes.default.svc")
-      namespace = optional(string, "trow")
+      namespace = optional(string, "zitadel")
     }
   )
   default     = {}
@@ -81,14 +81,14 @@ variable "retry" {
   description = "Retry policy for the application"
 }
 
-variable "domain" {
+variable "k8s_cluster_name" {
   type        = string
-  default     = "k8s.dev.local"
-  description = "Domain to use for the ingress"
+  default     = "dev"
+  description = "Name of the Kubernetes cluster"
 }
 
-variable "cluster_issuer_name" {
+variable "vault_mount_path" {
   type        = string
-  default     = "own"
-  description = "Name of the cluster issuer"
+  default     = "dev"
+  description = "Path to the vault mount"
 }

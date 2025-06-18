@@ -1,6 +1,6 @@
 locals {
   inputs              = read_terragrunt_config(find_in_parent_folders("globals.hcl"))
-  static_dependencies = ["prometheus-operator-crds", "ingress-nginx", "vm-operator"]
+  static_dependencies = ["prometheus-operator-crds", "ingress-nginx"]
 }
 
 include "root" {
@@ -52,17 +52,25 @@ dependency "cert_manager" {
   }
 }
 
+dependency "zitadel_postgres" {
+  config_path = "${get_path_to_repo_root()}/addons/argocd/zitadel-postgres"
+  mock_outputs = {
+    cluster_name = "test"
+  }
+}
+
 inputs = merge(
   {
     k8s_cluster_name          = dependency.k8s.outputs.cluster_name
     cluster_issuer_name       = dependency.cert_manager.outputs.cluster_issuer_name
     cluster_secret_store_name = dependency.external_secrets.outputs.cluster_secret_store_name
     vault_mount_path          = dependency.external_secrets.outputs.vault_mount_path
+    postgres_cluster_name     = dependency.zitadel_postgres.outputs.cluster_name
   },
-  try(local.inputs.locals.argocd.vm_stack.inputs, {})
+  try(local.inputs.locals.argocd.zitadel.inputs, {})
 )
 
 exclude {
-  if      = feature.initial_apply.value || !try(local.inputs.locals.argocd.vm_stack.enabled, true)
+  if      = feature.initial_apply.value || !try(local.inputs.locals.argocd.zitadel.enabled, true)
   actions = ["all"]
 }
