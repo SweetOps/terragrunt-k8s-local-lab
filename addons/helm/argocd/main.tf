@@ -6,7 +6,11 @@ locals {
     }
     configs = {
       cm = {
-        "accounts.kind_cluster" = "apiKey,login"
+        "accounts.kind_cluster"                                     = "apiKey,login"
+        "resource.customizations.ignoreDifferences.apps_Deployment" = <<-EOT
+          jqPathExpressions:
+            - ".spec.template.spec.containers[].env[]?.valueFrom.resourceFieldRef.divisor"
+        EOT
       }
       params = {
         "server.insecure" = true

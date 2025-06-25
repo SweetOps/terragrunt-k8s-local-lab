@@ -1,19 +1,19 @@
 variable "chart" {
   type        = string
   description = "The name of the chart to install"
-  default     = "operator"
+  default     = "altinity-clickhouse-operator"
 }
 
 variable "repository" {
   type        = string
   description = "The URL of the chart repository"
-  default     = "https://operator.min.io/"
+  default     = "https://docs.altinity.com/clickhouse-operator"
 }
 
 variable "chart_version" {
   type        = string
   description = "Specify the exact chart version to install. If this is not specified, the latest version is installed."
-  default     = "v7.1.1"
+  default     = "0.25.0"
 }
 
 variable "override_values" {
@@ -25,7 +25,7 @@ variable "override_values" {
 variable "metadata" {
   type = object(
     {
-      name      = optional(string, "minio-operator")
+      name      = optional(string, "clickhouse-operator")
       namespace = optional(string, "argocd")
     }
   )
@@ -37,7 +37,7 @@ variable "destination" {
   type = object(
     {
       server    = optional(string, "https://kubernetes.default.svc")
-      namespace = optional(string, "minio")
+      namespace = optional(string, "clickhouse")
     }
   )
   default     = {}
@@ -81,3 +81,14 @@ variable "retry" {
   description = "Retry policy for the application"
 }
 
+variable "cluster_secret_store_name" {
+  type        = string
+  default     = "vault"
+  description = "Name of the cluster secret store"
+}
+
+variable "vault_mount_path" {
+  type        = string
+  default     = "dev"
+  description = "Path to the vault mount"
+}
