@@ -11,8 +11,8 @@ locals {
       "nginx.ingress.kubernetes.io/proxy-ssl-verify"   = "off"
       "nginx.ingress.kubernetes.io/backend-protocol"   = "HTTPS"
       "nginx.ingress.kubernetes.io/rewrite-target"     = "/"
-      "nginx.ingress.kubernetes.io/proxy-read-timeout" = "60s"
-      "nginx.ingress.kubernetes.io/proxy-send-timeout" = "60s"
+      "nginx.ingress.kubernetes.io/proxy-read-timeout" = "60"
+      "nginx.ingress.kubernetes.io/proxy-send-timeout" = "60"
     }
     ingressClassName = "nginx"
   }
@@ -45,6 +45,9 @@ locals {
         },
         {
           name = "temporal"
+        },
+        {
+          name = "clickhouse"
         }
       ]
       features = {
