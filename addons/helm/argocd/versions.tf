@@ -8,5 +8,9 @@ terraform {
       source  = "cloudposse/utils"
       version = "~> 1"
     }
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
+      version = "~> 2"
+    }
   }
 }

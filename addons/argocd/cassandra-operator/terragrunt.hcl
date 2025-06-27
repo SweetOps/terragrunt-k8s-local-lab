@@ -1,5 +1,6 @@
 locals {
   inputs = read_terragrunt_config(find_in_parent_folders("globals.hcl"))
+    static_dependencies = ["prometheus-operator-crds", "cert-manager"]
 }
 
 include "root" {
@@ -16,9 +17,11 @@ dependency "k8s" {
   }
 }
 
-dependency "prometheus_operator_crds" {
-  config_path  = "${get_path_to_repo_root()}/addons/argocd/prometheus-operator-crds"
-  skip_outputs = true
+dependencies {
+  paths = formatlist(
+    "${get_path_to_repo_root()}/addons/argocd/%s",
+    local.static_dependencies
+  )
 }
 
 inputs = try(local.inputs.locals.argocd.cassandra_operator.inputs, {})
