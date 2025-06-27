@@ -1,30 +1,7 @@
 locals {
-  hostname = "trow.${var.domain}"
-
   values = {
     trow = {
       fullNameOverride = "trow"
-      domain           = local.hostname
-    }
-    ingress = {
-      enabled = true
-      annotations = {
-        "cert-manager.io/cluster-issuer"              = var.cluster_issuer_name
-        "nginx.ingress.kubernetes.io/proxy-body-size" = "0"
-      }
-      ingressClassName = "nginx"
-      hosts = [
-        {
-          host  = local.hostname
-          paths = ["/"]
-        }
-      ]
-      tls = [
-        {
-          secretName = local.hostname
-          hosts      = [local.hostname]
-        }
-      ]
     }
   }
 }
@@ -47,6 +24,7 @@ module "argocd" {
 data "utils_deep_merge_yaml" "main" {
   input = [
     yamlencode(local.values),
+    var.inherited_values,
     var.override_values,
   ]
 }

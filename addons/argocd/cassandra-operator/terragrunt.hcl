@@ -1,6 +1,6 @@
 locals {
-  inputs = read_terragrunt_config(find_in_parent_folders("globals.hcl"))
-    static_dependencies = ["prometheus-operator-crds", "cert-manager"]
+  inputs              = read_terragrunt_config(find_in_parent_folders("globals.hcl"))
+  static_dependencies = ["prometheus-operator-crds", "cert-manager"]
 }
 
 include "root" {

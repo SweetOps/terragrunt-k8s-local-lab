@@ -1,7 +1,9 @@
 locals {
-  root_path     = get_repo_root()
-  ca_cert_path  = "${local.root_path}/.certs/rootCA.pem"
-  key_cert_path = "${local.root_path}/.certs/rootCA-key.pem"
+  root_path           = get_repo_root()
+  ca_cert_path        = "${local.root_path}/.certs/rootCA.pem"
+  key_cert_path       = "${local.root_path}/.certs/rootCA-key.pem"
+  domain              = "k8s.dev.local"
+  cluster_issuer_name = "own"
 
   k8s_extra_mounts = [
     {
@@ -35,8 +37,9 @@ locals {
   argocd = {
     cert_manager = {
       inputs = {
-        tls_crt = fileexists(local.ca_cert_path) ? base64encode(file(local.ca_cert_path)) : "ci"
-        tls_key = fileexists(local.key_cert_path) ? base64encode(file(local.key_cert_path)) : "ci"
+        cluster_issuer_name = local.cluster_issuer_name
+        tls_crt             = fileexists(local.ca_cert_path) ? base64encode(file(local.ca_cert_path)) : "ci"
+        tls_key             = fileexists(local.key_cert_path) ? base64encode(file(local.key_cert_path)) : "ci"
       }
     }
   }
