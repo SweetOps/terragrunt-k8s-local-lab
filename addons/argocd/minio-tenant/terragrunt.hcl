@@ -1,6 +1,61 @@
 locals {
   inputs              = read_terragrunt_config(find_in_parent_folders("globals.hcl"))
   static_dependencies = ["prometheus-operator-crds", "ingress-nginx", "minio-operator"]
+  domain              = local.inputs.locals.domain
+  cluster_issuer_name = local.inputs.locals.cluster_issuer_name
+  api_hostname        = format("minio-api.%s", local.domain)
+  console_hostname    = format("minio.%s", local.domain)
+
+  ingress = {
+    enabled = try(local.inputs.locals.argocd.ingress_nginx.enabled, true)
+    annotations = {
+      "cert-manager.io/cluster-issuer"                 = local.cluster_issuer_name
+      "nginx.ingress.kubernetes.io/proxy-body-size"    = "0"
+      "nginx.ingress.kubernetes.io/proxy-ssl-verify"   = "off"
+      "nginx.ingress.kubernetes.io/backend-protocol"   = "HTTPS"
+      "nginx.ingress.kubernetes.io/rewrite-target"     = "/"
+      "nginx.ingress.kubernetes.io/proxy-read-timeout" = "60"
+      "nginx.ingress.kubernetes.io/proxy-send-timeout" = "60"
+    }
+    ingressClassName = "nginx"
+  }
+
+  values = {
+    tenant = {
+      features = {
+        domains = {
+          minio   = [local.api_hostname]
+          console = local.console_hostname
+        }
+      }
+    }
+    ingress = {
+      api = merge(
+        {
+          host = local.api_hostname
+          tls = [
+            {
+              secretName = local.api_hostname
+              hosts      = [local.api_hostname]
+            }
+          ]
+        },
+        local.ingress
+      )
+      console = merge(
+        {
+          host = local.console_hostname
+          tls = [
+            {
+              secretName = local.console_hostname
+              hosts      = [local.console_hostname]
+            }
+          ]
+        },
+        local.ingress
+      )
+    }
+  }
 }
 
 include "root" {
@@ -55,9 +110,9 @@ dependency "cert_manager" {
 inputs = merge(
   {
     k8s_cluster_name          = dependency.k8s.outputs.cluster_name
-    cluster_issuer_name       = dependency.cert_manager.outputs.cluster_issuer_name
     cluster_secret_store_name = dependency.external_secrets.outputs.cluster_secret_store_name
     vault_mount_path          = dependency.external_secrets.outputs.vault_mount_path
+    inherited_values          = yamlencode(local.values)
   },
   try(local.inputs.locals.argocd.minio_tenant.inputs, {})
 )

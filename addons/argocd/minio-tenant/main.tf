@@ -1,21 +1,5 @@
 locals {
-  api_hostname     = "minio-api.${var.domain}"
-  console_hostname = "minio.${var.domain}"
-  secret_name      = "s3-env-configuration"
-
-  ingress = {
-    enabled = true
-    annotations = {
-      "cert-manager.io/cluster-issuer"                 = var.cluster_issuer_name
-      "nginx.ingress.kubernetes.io/proxy-body-size"    = "0"
-      "nginx.ingress.kubernetes.io/proxy-ssl-verify"   = "off"
-      "nginx.ingress.kubernetes.io/backend-protocol"   = "HTTPS"
-      "nginx.ingress.kubernetes.io/rewrite-target"     = "/"
-      "nginx.ingress.kubernetes.io/proxy-read-timeout" = "60"
-      "nginx.ingress.kubernetes.io/proxy-send-timeout" = "60"
-    }
-    ingressClassName = "nginx"
-  }
+  secret_name = "s3-env-configuration"
 
   values = {
     fullNameOverride = "minio-tenant"
@@ -26,6 +10,10 @@ locals {
         existingSecret = true
       }
 
+      features = {
+        bucketDNS = true
+      }
+
       pools = [
         {
           name             = "s3"
@@ -33,9 +21,11 @@ locals {
           volumesPerServer = 1
         }
       ]
+
       metrics = {
         enabled = true
       }
+
       buckets = [
         {
           name = "postgres"
@@ -50,38 +40,6 @@ locals {
           name = "clickhouse"
         }
       ]
-      features = {
-        domains = {
-          minio   = ["minio.${var.destination.namespace}.svc.cluster.local", local.api_hostname]
-          console = local.console_hostname
-        }
-      }
-    }
-    ingress = {
-      api = merge(
-        {
-          host = local.api_hostname
-          tls = [
-            {
-              secretName = local.api_hostname
-              hosts      = [local.api_hostname]
-            }
-          ]
-        },
-        local.ingress
-      )
-      console = merge(
-        {
-          host = local.console_hostname
-          tls = [
-            {
-              secretName = local.console_hostname
-              hosts      = [local.console_hostname]
-            }
-          ]
-        },
-        local.ingress
-      )
     }
     extraResources = [
       {
@@ -162,6 +120,7 @@ module "argocd" {
 data "utils_deep_merge_yaml" "main" {
   input = [
     yamlencode(local.values),
+    var.inherited_values,
     var.override_values,
   ]
 }
