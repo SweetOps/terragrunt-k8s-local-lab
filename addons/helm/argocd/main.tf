@@ -6,7 +6,6 @@ locals {
     }
     configs = {
       cm = {
-        "accounts.kind_cluster"                                     = "apiKey,login"
         "resource.customizations.ignoreDifferences.apps_Deployment" = <<-EOT
           jqPathExpressions:
             - ".spec.template.spec.containers[].env[]?.valueFrom.resourceFieldRef.divisor"
@@ -14,11 +13,6 @@ locals {
       }
       params = {
         "server.insecure" = true
-      }
-      secret = {
-        createSecret                   = true
-        argocdServerAdminPassword      = "$2a$10$KVscBZGucWmkXd5HtFwSHeVGKrKJM9EfRotC9N.V6tbwrftV3ab.a"
-        argocdServerAdminPasswordMtime = "2025-05-19T12:33:47Z"
       }
     }
   }

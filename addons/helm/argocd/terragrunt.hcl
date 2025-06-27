@@ -16,6 +16,25 @@ dependency "k8s" {
   }
 }
 
+generate "k8s_provider" {
+  path      = "tg-k8s-provider.tf"
+  if_exists = "overwrite_terragrunt"
+  contents  = <<-EOF
+provider "kubernetes" {
+    host                   = "${dependency.k8s.outputs.endpoint}"
+    client_key             = <<-KEY
+${dependency.k8s.outputs.client_key}
+KEY
+    client_certificate     = <<-CERT
+${dependency.k8s.outputs.client_certificate}"
+CERT
+    cluster_ca_certificate = <<-CA
+${dependency.k8s.outputs.cluster_ca_certificate}
+CA
+}
+EOF
+}
+
 dependency "cilium" {
   config_path  = "${get_path_to_repo_root()}/addons/helm/cilium"
   skip_outputs = true

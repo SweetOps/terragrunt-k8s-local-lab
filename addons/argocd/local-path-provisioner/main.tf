@@ -5,7 +5,7 @@ locals {
       create            = true
       defaultClass      = true
       defaultVolumeType = "hostPath"
-      name              = "standard"
+      name              = "local-path"
     }
     nodePathMap = [
       {
