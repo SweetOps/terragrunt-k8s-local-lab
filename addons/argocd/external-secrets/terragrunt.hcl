@@ -1,6 +1,7 @@
 locals {
   inputs              = read_terragrunt_config(find_in_parent_folders("globals.hcl"))
   static_dependencies = ["prometheus-operator-crds"]
+  exclude             = feature.initial_apply.value || !try(local.inputs.locals.argocd.external_secrets.enabled, true) && !try(local.inputs.locals.argocd.vault.enabled, true)
 }
 
 include "root" {
@@ -57,7 +58,11 @@ inputs = (
   )
 )
 
+feature "initial_apply" {
+  default = false
+}
+
 exclude {
-  if      = feature.initial_apply.value || !try(local.inputs.locals.argocd.external_secrets.enabled, true) && !try(local.inputs.locals.argocd.vault.enabled, true)
-  actions = ["all"]
+  if      = local.exclude
+  actions = ["plan", "apply", "destroy", "output"]
 }

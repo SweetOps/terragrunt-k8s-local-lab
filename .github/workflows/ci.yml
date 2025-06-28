@@ -16,16 +16,23 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Validate Terragrunt configuration ["initial_apply=true"]
+      - name: Ensure code is formatted
         uses: gruntwork-io/terragrunt-action@v2
         with:
-          tf_version: "1.12.1"
-          tg_version: "0.80.3"
-          tg_command: "run validate --feature initial_apply=true --all"
+          tf_version: "1.12.2"
+          tg_version: "0.82.2"
+          tg_command: "hcl fmt --check"
+
+      - name: Validate Terragrunt manifests
+        uses: gruntwork-io/terragrunt-action@v2
+        with:
+          tf_version: "1.12.2"
+          tg_version: "0.82.2"
+          tg_command: "hcl validate"
 
       - name: Validate Terragrunt configuration
         uses: gruntwork-io/terragrunt-action@v2
         with:
-          tf_version: "1.12.1"
-          tg_version: "0.80.3"
+          tf_version: "1.12.2"
+          tg_version: "0.82.2"
           tg_command: "run validate --all"
