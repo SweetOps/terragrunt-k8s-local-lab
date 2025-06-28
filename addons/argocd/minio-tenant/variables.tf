@@ -16,6 +16,12 @@ variable "chart_version" {
   default     = "v7.1.1"
 }
 
+variable "inherited_values" {
+  type        = string
+  description = "Values inherited from the parent modules"
+  default     = ""
+}
+
 variable "override_values" {
   type        = string
   description = "A helm values to override the default values"
@@ -81,12 +87,6 @@ variable "retry" {
   description = "Retry policy for the application"
 }
 
-variable "domain" {
-  type        = string
-  default     = "k8s.dev.local"
-  description = "Domain to use for the ingress"
-}
-
 variable "k8s_cluster_name" {
   type        = string
   default     = "dev"
@@ -97,12 +97,6 @@ variable "cluster_secret_store_name" {
   type        = string
   default     = "vault"
   description = "Name of the cluster secret store"
-}
-
-variable "cluster_issuer_name" {
-  type        = string
-  default     = "own"
-  description = "Name of the cluster issuer"
 }
 
 variable "vault_mount_path" {

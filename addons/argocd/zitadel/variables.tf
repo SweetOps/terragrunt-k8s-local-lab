@@ -16,6 +16,12 @@ variable "chart_version" {
   default     = "8.13.4"
 }
 
+variable "inherited_values" {
+  type        = string
+  description = "Values inherited from the parent modules"
+  default     = ""
+}
+
 variable "override_values" {
   type        = string
   description = "A helm values to override the default values"
@@ -99,20 +105,8 @@ variable "cluster_secret_store_name" {
   description = "Name of the cluster secret store"
 }
 
-variable "cluster_issuer_name" {
-  type        = string
-  default     = "own"
-  description = "Name of the cluster issuer"
-}
-
 variable "vault_mount_path" {
   type        = string
   default     = "dev"
   description = "Path to the vault mount"
-}
-
-variable "postgres_cluster_name" {
-  type        = string
-  default     = "zitadel-postgres"
-  description = "Name of the PostgreSQL cluster"
 }

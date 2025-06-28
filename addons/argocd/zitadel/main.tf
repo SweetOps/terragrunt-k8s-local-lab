@@ -1,5 +1,4 @@
 locals {
-  hostname               = "zitadel.${var.domain}"
   master_key_secret_name = "zitadel-masterkey"
   master_key_secret_key  = "masterkey"
 
@@ -13,109 +12,6 @@ locals {
         }
       }
     }
-
-    ingress = {
-      enabled   = true
-      className = "nginx"
-      annotations = {
-        "cert-manager.io/cluster-issuer" = var.cluster_issuer_name
-      }
-      hosts = [
-        {
-          host = local.hostname
-          paths = [
-            {
-              path     = "/"
-              pathType = "Prefix"
-            }
-          ]
-        }
-      ]
-      tls = [
-        {
-          secretName = local.hostname
-          hosts      = [local.hostname]
-        }
-      ]
-    }
-
-    env = [
-      {
-        name  = "ZITADEL_EXTERNALDOMAIN"
-        value = local.hostname
-      },
-      {
-        name  = "ZITADEL_DATABASE_POSTGRES_USER_SSL_MODE"
-        value = "disable"
-      },
-      {
-        name  = "ZITADEL_DATABASE_POSTGRES_ADMIN_SSL_MODE"
-        value = "disable"
-      },
-      {
-        name = "ZITADEL_DATABASE_POSTGRES_HOST"
-        valueFrom = {
-          secretKeyRef = {
-            name = "${var.postgres_cluster_name}-cluster-app"
-            key  = "host"
-          }
-        }
-      },
-      {
-        name = "ZITADEL_DATABASE_POSTGRES_PORT"
-        valueFrom = {
-          secretKeyRef = {
-            name = "${var.postgres_cluster_name}-cluster-app"
-            key  = "port"
-          }
-        }
-      },
-      {
-        name = "ZITADEL_DATABASE_POSTGRES_DATABASE"
-        valueFrom = {
-          secretKeyRef = {
-            name = "${var.postgres_cluster_name}-cluster-app"
-            key  = "dbname"
-          }
-        }
-      },
-      {
-        name = "ZITADEL_DATABASE_POSTGRES_USER_USERNAME"
-        valueFrom = {
-          secretKeyRef = {
-            name = "${var.postgres_cluster_name}-cluster-app"
-            key  = "username"
-          }
-        }
-      },
-      {
-        name = "ZITADEL_DATABASE_POSTGRES_USER_PASSWORD"
-        valueFrom = {
-          secretKeyRef = {
-            name = "${var.postgres_cluster_name}-cluster-app"
-            key  = "password"
-          }
-        }
-      },
-      {
-        name = "ZITADEL_DATABASE_POSTGRES_ADMIN_USERNAME"
-        valueFrom = {
-          secretKeyRef = {
-            name = "${var.postgres_cluster_name}-cluster-superuser"
-            key  = "username"
-          }
-        }
-      },
-      {
-        name = "ZITADEL_DATABASE_POSTGRES_ADMIN_PASSWORD"
-        valueFrom = {
-          secretKeyRef = {
-            name = "${var.postgres_cluster_name}-cluster-superuser"
-            key  = "password"
-          }
-        }
-      }
-    ]
 
     initJob = {
       annotations = {
@@ -175,7 +71,7 @@ locals {
   }
 }
 
-resource "random_string" "main" {
+resource "random_password" "main" {
   length  = 32
   upper   = true
   lower   = true
@@ -188,7 +84,7 @@ resource "vault_kv_secret_v2" "main" {
 
   data_json = jsonencode(
     {
-      "${local.master_key_secret_key}" = random_string.main.result
+      "${local.master_key_secret_key}" = random_password.main.result
     }
   )
 }
@@ -211,6 +107,7 @@ module "argocd" {
 data "utils_deep_merge_yaml" "main" {
   input = [
     yamlencode(local.values),
+    var.inherited_values,
     var.override_values,
   ]
 }

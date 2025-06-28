@@ -16,6 +16,12 @@ variable "chart_version" {
   default     = "0.9.8"
 }
 
+variable "inherited_values" {
+  type        = string
+  description = "Values inherited from the parent modules"
+  default     = ""
+}
+
 variable "override_values" {
   type        = string
   description = "A helm values to override the default values"
@@ -79,16 +85,4 @@ variable "retry" {
   )
   default     = {}
   description = "Retry policy for the application"
-}
-
-variable "domain" {
-  type        = string
-  default     = "k8s.dev.local"
-  description = "Domain to use for the ingress"
-}
-
-variable "cluster_issuer_name" {
-  type        = string
-  default     = "own"
-  description = "Name of the cluster issuer"
 }

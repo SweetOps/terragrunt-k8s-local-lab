@@ -58,6 +58,6 @@ inputs = (
 )
 
 exclude {
-  if      = feature.initial_apply.value || !try(local.inputs.locals.argocd.external_secrets.enabled, true)
+  if      = feature.initial_apply.value || !try(local.inputs.locals.argocd.external_secrets.enabled, true) && !try(local.inputs.locals.argocd.vault.enabled, true)
   actions = ["all"]
 }
