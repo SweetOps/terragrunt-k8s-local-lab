@@ -1,6 +1,7 @@
 locals {
   inputs              = read_terragrunt_config(find_in_parent_folders("globals.hcl"))
   static_dependencies = ["prometheus-operator-crds", "cert-manager"]
+  exclude             = feature.initial_apply.value || !try(local.inputs.locals.argocd.clickhouse_operator.enabled, true)
 }
 
 include "root" {
@@ -52,7 +53,11 @@ inputs = merge(
   try(local.inputs.locals.argocd.clickhouse_operator.inputs, {})
 )
 
+feature "initial_apply" {
+  default = false
+}
+
 exclude {
-  if      = feature.initial_apply.value || !try(local.inputs.locals.argocd.clickhouse_operator.enabled, true)
-  actions = ["all"]
+  if      = local.exclude
+  actions = ["plan", "apply", "destroy", "output"]
 }

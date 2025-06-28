@@ -1,6 +1,7 @@
 locals {
   inputs              = read_terragrunt_config(find_in_parent_folders("globals.hcl"))
   static_dependencies = ["prometheus-operator-crds", "ingress-nginx", "minio-operator"]
+  exclude             = feature.initial_apply.value || !try(local.inputs.locals.argocd.minio_tenant.enabled, true)
   domain              = local.inputs.locals.domain
   cluster_issuer_name = local.inputs.locals.cluster_issuer_name
   api_hostname        = format("minio-api.%s", local.domain)
@@ -117,7 +118,11 @@ inputs = merge(
   try(local.inputs.locals.argocd.minio_tenant.inputs, {})
 )
 
+feature "initial_apply" {
+  default = false
+}
+
 exclude {
-  if      = feature.initial_apply.value || !try(local.inputs.locals.argocd.minio_tenant.enabled, true)
-  actions = ["all"]
+  if      = local.exclude
+  actions = ["plan", "apply", "destroy", "output"]
 }

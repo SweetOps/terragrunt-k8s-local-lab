@@ -1,6 +1,7 @@
 locals {
   inputs              = read_terragrunt_config(find_in_parent_folders("globals.hcl"))
   static_dependencies = ["prometheus-operator-crds", "ingress-nginx", "cert-manager"]
+  exclude             = feature.initial_apply.value || !try(local.inputs.locals.argocd.vm_operator.enabled, true)
 }
 
 include "root" {
@@ -26,7 +27,11 @@ dependencies {
 
 inputs = try(local.inputs.locals.argocd.vm_operator.inputs, {})
 
+feature "initial_apply" {
+  default = false
+}
+
 exclude {
-  if      = feature.initial_apply.value || !try(local.inputs.locals.argocd.vm_operator.enabled, true)
-  actions = ["all"]
+  if      = local.exclude
+  actions = ["plan", "apply", "destroy", "output"]
 }

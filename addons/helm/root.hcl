@@ -1,7 +1,3 @@
-feature "initial_apply" {
-  default = false
-}
-
 generate "provider" {
   path      = "tg-helm-provider.tf"
   if_exists = "overwrite_terragrunt"

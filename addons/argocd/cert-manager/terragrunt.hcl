@@ -1,5 +1,6 @@
 locals {
-  inputs = read_terragrunt_config(find_in_parent_folders("globals.hcl"))
+  inputs  = read_terragrunt_config(find_in_parent_folders("globals.hcl"))
+  exclude = feature.initial_apply.value || !try(local.inputs.locals.argocd.cert_manager.enabled, true)
 }
 
 include "root" {
@@ -23,7 +24,11 @@ dependency "prometheus_operator_crds" {
 
 inputs = try(local.inputs.locals.argocd.cert_manager.inputs, {})
 
+feature "initial_apply" {
+  default = false
+}
+
 exclude {
-  if      = feature.initial_apply.value || !try(local.inputs.locals.argocd.cert_manager.enabled, true)
-  actions = ["all"]
+  if      = local.exclude
+  actions = ["plan", "apply", "destroy", "output"]
 }

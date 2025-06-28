@@ -1,5 +1,6 @@
 locals {
-  inputs = read_terragrunt_config(find_in_parent_folders("globals.hcl"))
+  inputs  = read_terragrunt_config(find_in_parent_folders("globals.hcl"))
+  exclude = feature.initial_apply.value || !try(local.inputs.locals.argocd.local_path_storage.enabled, true)
 }
 
 include "root" {
@@ -18,7 +19,11 @@ dependency "k8s" {
 
 inputs = try(local.inputs.locals.argocd.local_path_storage.inputs, {})
 
+feature "initial_apply" {
+  default = false
+}
+
 exclude {
-  if      = feature.initial_apply.value || !try(local.inputs.locals.argocd.local_path_storage.enabled, true)
-  actions = ["all"]
+  if      = local.exclude
+  actions = ["plan", "apply", "destroy", "output"]
 }
