@@ -1,8 +1,8 @@
 locals {
-  inputs                = read_terragrunt_config(find_in_parent_folders("globals.hcl"))
-  static_dependencies   = ["prometheus-operator-crds", "ingress-nginx", "vm-operator"]
-  domain                = local.inputs.locals.domain
-  cluster_issuer_name   = local.inputs.locals.cluster_issuer_name
+  inputs              = read_terragrunt_config(find_in_parent_folders("globals.hcl"))
+  static_dependencies = ["prometheus-operator-crds", "ingress-nginx", "vm-operator"]
+  domain              = local.inputs.locals.domain
+  cluster_issuer_name = local.inputs.locals.cluster_issuer_name
 
   hostnames = {
     grafana      = format("grafana.%s", local.domain)
@@ -33,7 +33,7 @@ locals {
         hosts      = [v]
       }
     ]
-  }
+    }
   }
 
   ingress = {

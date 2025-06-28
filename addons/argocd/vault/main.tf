@@ -1,36 +1,16 @@
 locals {
-  token    = random_string.main.result
-  hostname = "vault.${var.domain}"
+  token = random_password.main.result
+
   values = {
     fullNameOverride = "vault"
     injector = {
       enabled = false
     }
     server = {
-      ingress = {
-        enabled = true
-        annotations = {
-          "cert-manager.io/cluster-issuer" = var.cluster_issuer_name
-        }
-        ingressClassName = "nginx"
-        hosts = [
-          {
-            host  = local.hostname
-            paths = ["/"]
-          }
-        ]
-        tls = [
-          {
-            secretName = local.hostname
-            hosts      = [local.hostname]
-          }
-        ]
-      }
       dataStorage = {
-        enabled      = true
-        size         = "1Gi"
-        mountPath    = "/vault/data"
-        storageClass = "standard"
+        enabled   = true
+        size      = "1Gi"
+        mountPath = "/vault/data"
       }
       dev = {
         enabled      = true
@@ -49,7 +29,7 @@ locals {
   }
 }
 
-resource "random_string" "main" {
+resource "random_password" "main" {
   length  = 32
   special = false
 }
