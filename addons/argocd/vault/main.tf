@@ -52,6 +52,7 @@ module "argocd" {
 data "utils_deep_merge_yaml" "main" {
   input = [
     yamlencode(local.values),
+    var.inherited_values,
     var.override_values,
   ]
 }

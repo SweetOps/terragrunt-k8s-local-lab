@@ -16,17 +16,7 @@ locals {
     annotations = {
       "cert-manager.io/cluster-issuer" = local.cluster_issuer_name
     }
-    hosts = [
-      {
-        host = v
-        paths = [
-          {
-            path     = "/"
-            pathType = "Prefix"
-          }
-        ]
-      }
-    ]
+    hosts = [v]
     tls = [
       {
         secretName = v

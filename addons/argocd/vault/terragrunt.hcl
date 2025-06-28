@@ -6,24 +6,26 @@ locals {
   hostname            = format("vault.%s", local.domain)
 
   values = {
-    ingress = {
-      enabled = try(local.inputs.locals.argocd.ingress_nginx.enabled, true)
-      annotations = {
-        "cert-manager.io/cluster-issuer" = local.cluster_issuer_name
+    server = {
+      ingress = {
+        enabled = try(local.inputs.locals.argocd.ingress_nginx.enabled, true)
+        annotations = {
+          "cert-manager.io/cluster-issuer" = local.cluster_issuer_name
+        }
+        ingressClassName = "nginx"
+        hosts = [
+          {
+            host  = local.hostname
+            paths = ["/"]
+          }
+        ]
+        tls = [
+          {
+            secretName = local.hostname
+            hosts      = [local.hostname]
+          }
+        ]
       }
-      ingressClassName = "nginx"
-      hosts = [
-        {
-          host  = local.hostname
-          paths = ["/"]
-        }
-      ]
-      tls = [
-        {
-          secretName = local.hostname
-          hosts      = [local.hostname]
-        }
-      ]
     }
   }
 }
