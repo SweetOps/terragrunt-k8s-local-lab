@@ -7,9 +7,9 @@ locals {
 
   values = {
     ingress = {
-      enabled = true
+      enabled = try(local.inputs.locals.argocd.ingress_nginx.enabled, true)
       annotations = {
-        "cert-manager.io/cluster-issuer" = var.cluster_issuer_name
+        "cert-manager.io/cluster-issuer" = local.cluster_issuer_name
       }
       ingressClassName = "nginx"
       hosts = [
