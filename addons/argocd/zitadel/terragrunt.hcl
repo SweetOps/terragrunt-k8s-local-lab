@@ -172,7 +172,7 @@ inputs = merge(
     k8s_cluster_name          = dependency.k8s.outputs.cluster_name
     cluster_secret_store_name = dependency.external_secrets.outputs.cluster_secret_store_name
     vault_mount_path          = dependency.external_secrets.outputs.vault_mount_path
-    inherited_values          = dependency.zitadel_postgres.outputs.inherited_values
+    inherited_values          = yamlencode(local.values)
   },
   try(local.inputs.locals.argocd.zitadel.inputs, {})
 )

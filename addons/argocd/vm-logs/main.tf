@@ -1,28 +1,7 @@
 locals {
-  hostname = "vm-logs.${var.domain}"
 
   values = {
     server = {
-      ingress = {
-        enabled = true
-        annotations = {
-          "cert-manager.io/cluster-issuer" = var.cluster_issuer_name
-        }
-        ingressClassName = "nginx"
-        hosts = [
-          {
-            name = local.hostname
-            path = ["/"]
-            port = "http"
-          }
-        ]
-        tls = [
-          {
-            secretName = local.hostname
-            hosts      = [local.hostname]
-          }
-        ]
-      }
       vmServiceScrape = {
         enabled = true
       }
@@ -54,6 +33,7 @@ module "argocd" {
 data "utils_deep_merge_yaml" "main" {
   input = [
     yamlencode(local.values),
+    var.inherited_values,
     var.override_values,
   ]
 }

@@ -1,6 +1,34 @@
 locals {
   inputs              = read_terragrunt_config(find_in_parent_folders("globals.hcl"))
-  static_dependencies = ["prometheus-operator-crds", "ingress-nginx", "external-secrets", "vm-operator", "vm-stack", "cert-manager"]
+  static_dependencies = ["prometheus-operator-crds", "ingress-nginx", "external-secrets", "vm-operator", "vm-stack"]
+  domain              = local.inputs.locals.domain
+  cluster_issuer_name = local.inputs.locals.cluster_issuer_name
+  hostname            = format("vm-logs.%s", local.domain)
+
+  values = {
+    server = {
+      ingress = {
+        enabled = true
+        annotations = {
+          "cert-manager.io/cluster-issuer" = local.cluster_issuer_name
+        }
+        ingressClassName = "nginx"
+        hosts = [
+          {
+            name = local.hostname
+            path = ["/"]
+            port = "http"
+          }
+        ]
+        tls = [
+          {
+            secretName = local.hostname
+            hosts      = [local.hostname]
+          }
+        ]
+      }
+    }
+  }
 }
 
 include "root" {
@@ -34,7 +62,7 @@ dependency "cert_manager" {
 
 inputs = merge(
   {
-    cluster_issuer_name = dependency.cert_manager.outputs.cluster_issuer_name
+    inherited_values = yamlencode(local.values)
   },
   try(local.inputs.locals.argocd.vm_logs.inputs, {})
 )
