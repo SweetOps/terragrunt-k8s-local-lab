@@ -1,6 +1,114 @@
 locals {
-  inputs              = read_terragrunt_config(find_in_parent_folders("globals.hcl"))
-  static_dependencies = ["prometheus-operator-crds", "ingress-nginx"]
+  inputs                = read_terragrunt_config(find_in_parent_folders("globals.hcl"))
+  static_dependencies   = ["prometheus-operator-crds", "ingress-nginx"]
+  domain                = local.inputs.locals.domain
+  cluster_issuer_name   = local.inputs.locals.cluster_issuer_name
+  hostname              = format("zitadel.%s", local.domain)
+  postgres_cluster_name = "zitadel-postgres"
+
+  values = {
+    ingress = {
+      enabled   = try(local.inputs.locals.argocd.ingress_nginx.enabled, true)
+      className = "nginx"
+      annotations = {
+        "cert-manager.io/cluster-issuer" = local.cluster_issuer_name
+      }
+      hosts = [
+        {
+          host = local.hostname
+          paths = [
+            {
+              path     = "/"
+              pathType = "Prefix"
+            }
+          ]
+        }
+      ]
+      tls = [
+        {
+          secretName = local.hostname
+          hosts      = [local.hostname]
+        }
+      ]
+    }
+    env = [
+      {
+        name  = "ZITADEL_EXTERNALDOMAIN"
+        value = local.hostname
+      },
+      {
+        name  = "ZITADEL_DATABASE_POSTGRES_USER_SSL_MODE"
+        value = "disable"
+      },
+      {
+        name  = "ZITADEL_DATABASE_POSTGRES_ADMIN_SSL_MODE"
+        value = "disable"
+      },
+      {
+        name = "ZITADEL_DATABASE_POSTGRES_HOST"
+        valueFrom = {
+          secretKeyRef = {
+            name = "${local.postgres_cluster_name}-cluster-app"
+            key  = "host"
+          }
+        }
+      },
+      {
+        name = "ZITADEL_DATABASE_POSTGRES_PORT"
+        valueFrom = {
+          secretKeyRef = {
+            name = "${local.postgres_cluster_name}-cluster-app"
+            key  = "port"
+          }
+        }
+      },
+      {
+        name = "ZITADEL_DATABASE_POSTGRES_DATABASE"
+        valueFrom = {
+          secretKeyRef = {
+            name = "${local.postgres_cluster_name}-cluster-app"
+            key  = "dbname"
+          }
+        }
+      },
+      {
+        name = "ZITADEL_DATABASE_POSTGRES_USER_USERNAME"
+        valueFrom = {
+          secretKeyRef = {
+            name = "${local.postgres_cluster_name}-cluster-app"
+            key  = "username"
+          }
+        }
+      },
+      {
+        name = "ZITADEL_DATABASE_POSTGRES_USER_PASSWORD"
+        valueFrom = {
+          secretKeyRef = {
+            name = "${local.postgres_cluster_name}-cluster-app"
+            key  = "password"
+          }
+        }
+      },
+      {
+        name = "ZITADEL_DATABASE_POSTGRES_ADMIN_USERNAME"
+        valueFrom = {
+          secretKeyRef = {
+            name = "${local.postgres_cluster_name}-cluster-superuser"
+            key  = "username"
+          }
+        }
+      },
+      {
+        name = "ZITADEL_DATABASE_POSTGRES_ADMIN_PASSWORD"
+        valueFrom = {
+          secretKeyRef = {
+            name = "${local.postgres_cluster_name}-cluster-superuser"
+            key  = "password"
+          }
+        }
+      }
+    ]
+  }
 }
 
 include "root" {
@@ -53,7 +161,7 @@ dependency "cert_manager" {
 }
 
 dependency "zitadel_postgres" {
-  config_path = "${get_path_to_repo_root()}/addons/argocd/zitadel-postgres"
+  config_path = "${get_path_to_repo_root()}/addons/argocd/${local.postgres_cluster_name}"
   mock_outputs = {
     cluster_name = "test"
   }
@@ -62,10 +170,9 @@ dependency "zitadel_postgres" {
 inputs = merge(
   {
     k8s_cluster_name          = dependency.k8s.outputs.cluster_name
-    cluster_issuer_name       = dependency.cert_manager.outputs.cluster_issuer_name
     cluster_secret_store_name = dependency.external_secrets.outputs.cluster_secret_store_name
     vault_mount_path          = dependency.external_secrets.outputs.vault_mount_path
-    postgres_cluster_name     = dependency.zitadel_postgres.outputs.cluster_name
+    inherited_values          = dependency.zitadel_postgres.outputs.inherited_values
   },
   try(local.inputs.locals.argocd.zitadel.inputs, {})
 )

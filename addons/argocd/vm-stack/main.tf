@@ -1,52 +1,7 @@
 locals {
-  grafana_hostname      = "grafana.${var.domain}"
-  vmsingle_hostname     = "vm-single.${var.domain}"
-  alertmanager_hostname = "alertmanager.${var.domain}"
-  secret_name           = "grafana-admin"
-
-  ingress = {
-    enabled          = true
-    ingressClassName = "nginx"
-    annotations = {
-      "cert-manager.io/cluster-issuer" = var.cluster_issuer_name
-    }
-  }
+  secret_name = "grafana-admin"
 
   values = {
-    victoria-metrics-operator = {
-      enabled = false
-    }
-
-    vmsingle = {
-      ingress = merge(
-        local.ingress,
-        {
-          hosts = [local.vmsingle_hostname]
-          tls = [
-            {
-              secretName = local.vmsingle_hostname
-              hosts      = [local.vmsingle_hostname]
-            }
-          ]
-        }
-      )
-    }
-
-    alertmanager = {
-      ingress = merge(
-        local.ingress,
-        {
-          hosts = [local.alertmanager_hostname]
-          tls = [
-            {
-              secretName = local.alertmanager_hostname
-              hosts      = [local.alertmanager_hostname]
-            }
-          ]
-        }
-      )
-    }
-
     grafana = {
       admin = {
         existingSecret = "grafana-admin"
@@ -56,21 +11,6 @@ locals {
 
       serviceMonitor = {
         enabled = true
-      }
-
-      ingress = {
-        enabled          = true
-        ingressClassName = "nginx"
-        annotations = {
-          "cert-manager.io/cluster-issuer" = var.cluster_issuer_name
-        }
-        hosts = [local.grafana_hostname]
-        tls = [
-          {
-            secretName = local.grafana_hostname
-            hosts      = [local.grafana_hostname]
-          }
-        ]
       }
     }
     extraObjects = [
@@ -110,7 +50,7 @@ locals {
   }
 }
 
-resource "random_string" "main" {
+resource "random_password" "main" {
   length  = 16
   upper   = true
   lower   = true
@@ -124,7 +64,7 @@ resource "vault_kv_secret_v2" "main" {
   data_json = jsonencode(
     {
       username = "admin"
-      password = random_string.main.result
+      password = random_password.main.result
     }
   )
 }
@@ -147,6 +87,7 @@ module "argocd" {
 data "utils_deep_merge_yaml" "main" {
   input = [
     yamlencode(local.values),
+    var.inherited_values,
     var.override_values,
   ]
 }

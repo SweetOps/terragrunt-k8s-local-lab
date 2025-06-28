@@ -1,6 +1,66 @@
 locals {
-  inputs              = read_terragrunt_config(find_in_parent_folders("globals.hcl"))
-  static_dependencies = ["prometheus-operator-crds", "ingress-nginx", "vm-operator"]
+  inputs                = read_terragrunt_config(find_in_parent_folders("globals.hcl"))
+  static_dependencies   = ["prometheus-operator-crds", "ingress-nginx", "vm-operator"]
+  domain                = local.inputs.locals.domain
+  cluster_issuer_name   = local.inputs.locals.cluster_issuer_name
+
+  hostnames = {
+    grafana      = format("grafana.%s", local.domain)
+    vmsingle     = format("vm-single.%s", local.domain)
+    alertmanager = format("alertmanager.%s", local.domain)
+  }
+
+  ingresses = { for k, v in local.hostnames : k => {
+    enabled          = try(local.inputs.locals.argocd.ingress_nginx.enabled, true)
+    ingressClassName = "nginx"
+    annotations = {
+      "cert-manager.io/cluster-issuer" = local.cluster_issuer_name
+    }
+    hosts = [
+      {
+        host = v
+        paths = [
+          {
+            path     = "/"
+            pathType = "Prefix"
+          }
+        ]
+      }
+    ]
+    tls = [
+      {
+        secretName = v
+        hosts      = [v]
+      }
+    ]
+  }
+  }
+
+  ingress = {
+    enabled          = try(local.inputs.locals.argocd.ingress_nginx.enabled, true)
+    ingressClassName = "nginx"
+    annotations = {
+      "cert-manager.io/cluster-issuer" = local.cluster_issuer_name
+    }
+  }
+
+  values = {
+    victoria-metrics-operator = {
+      enabled = !try(local.inputs.locals.argocd.vm_operator.enabled, true)
+    }
+
+    vmsingle = {
+      ingress = local.ingresses.vmsingle
+    }
+
+    alertmanager = {
+      ingress = local.ingresses.alertmanager
+    }
+
+    grafana = {
+      ingress = local.ingresses.grafana
+    }
+  }
 }
 
 include "root" {
@@ -58,6 +118,7 @@ inputs = merge(
     cluster_issuer_name       = dependency.cert_manager.outputs.cluster_issuer_name
     cluster_secret_store_name = dependency.external_secrets.outputs.cluster_secret_store_name
     vault_mount_path          = dependency.external_secrets.outputs.vault_mount_path
+    inherited_values          = yamlencode(local.values)
   },
   try(local.inputs.locals.argocd.vm_stack.inputs, {})
 )
