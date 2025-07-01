@@ -1,6 +1,6 @@
 locals {
   inputs              = read_terragrunt_config(find_in_parent_folders("globals.hcl"))
-  static_dependencies = ["prometheus-operator-crds", "ingress-nginx", "external-secrets", "vm-operator", "vm-stack"]
+  static_dependencies = ["prometheus-operator-crds", "ingress-nginx", "external-secrets"]
   exclude             = feature.initial_apply.value || !try(local.inputs.locals.argocd.vm_logs.enabled, true)
   domain              = local.inputs.locals.domain
   cluster_issuer_name = local.inputs.locals.cluster_issuer_name
