@@ -40,9 +40,9 @@ locals {
     }
     cert_manager = {
       inputs = {
-      cluster_issuer_name = local.cluster_issuer_name
-      tls_crt             = fileexists(local.ca_cert_path) ? base64encode(file(local.ca_cert_path)) : "ci"
-      tls_key             = fileexists(local.key_cert_path) ? base64encode(file(local.key_cert_path)) : "ci"
+        cluster_issuer_name = local.cluster_issuer_name
+        tls_crt             = fileexists(local.ca_cert_path) ? base64encode(file(local.ca_cert_path)) : "ci"
+        tls_key             = fileexists(local.key_cert_path) ? base64encode(file(local.key_cert_path)) : "ci"
       }
     }
     clickhouse_operator = {
