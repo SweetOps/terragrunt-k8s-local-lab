@@ -73,5 +73,3 @@ Once the cluster is ready, deploy the required add-ons:
 ```sh
 terragrunt run apply --all
 ```
-
-## :hammer: Tear-down
