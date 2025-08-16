@@ -11,7 +11,7 @@ Set up a local Kubernetes cluster with custom DNS resolution, TLS certificates, 
 Install the following tools using Homebrew:
 
 ```sh
-brew install dnsmasq mkcert chipmk/tap/docker-mac-net-connect
+brew install mkcert chipmk/tap/docker-mac-net-connect
 ```
 
 ---
@@ -35,20 +35,12 @@ This will:
 
 ## 🌐 Step 2: Set Up DNS Resolution
 
-Configure `dnsmasq` to resolve development domains to your local network IP:
+Adjust your on-host DNS configuration:
 
 ```sh
-mkdir -pv $(brew --prefix)/etc/
-echo 'address=/.k8s.dev.local/172.18.0.200' >> $(brew --prefix)/etc/dnsmasq.conf
+sudo cp /etc/resolv.conf /etc/resolv.conf.bak
+echo "nameserver 127.0.0.1" | sudo tee /etc/resolv.conf
 ```
-
-Start the `dnsmasq` service:
-
-```sh
-sudo brew services start dnsmasq
-```
-
-This allows domain names like `*.dev.local` and `*.k8s.dev.local` to resolve to `172.18.0.200`.
 
 ---
 
@@ -81,3 +73,5 @@ Once the cluster is ready, deploy the required add-ons:
 ```sh
 terragrunt run apply --all
 ```
+
+## :hammer: Tear-down

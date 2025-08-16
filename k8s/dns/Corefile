@@ -1,0 +1,10 @@
+.:53 {
+    etcd k8s.dev.local {
+        stubzones
+        path /skydns
+        endpoint http://etcd:2379
+    }
+    forward . 8.8.8.8
+    log
+    errors
+}
