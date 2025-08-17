@@ -6,7 +6,7 @@ locals {
       name = "coredns"
       coredns = {
         endpoints = [
-          "http://${dependency.coredns.etcd_ip_address}:2379"
+          "http://${dependency.dns.etcd_ip_address}:2379"
         ]
         zone = local.inputs.locals.domain
       }
@@ -37,8 +37,8 @@ dependency "k8s" {
   }
 }
 
-dependency "coredns" {
-  config_path = "${get_path_to_repo_root()}/k8s/coredns"
+dependency "dns" {
+  config_path = "${get_path_to_repo_root()}/k8s/dns"
   mock_outputs = {
     etcd_ip_address    = "10.0.0.0"
     coredns_ip_address = "10.0.0.1"
@@ -54,7 +54,7 @@ inputs = merge(
   {
     inherited_values = yamlencode(local.values)
   },
-  try(local.inputs.locals.argocd.vm_stack.inputs, {})
+  try(local.inputs.locals.argocd.external_dns.inputs, {})
 )
 
 feature "initial_apply" {
