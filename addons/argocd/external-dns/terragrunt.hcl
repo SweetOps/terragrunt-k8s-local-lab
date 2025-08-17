@@ -1,22 +1,6 @@
 locals {
   inputs  = read_terragrunt_config(find_in_parent_folders("globals.hcl"))
   exclude = feature.initial_apply.value || !try(local.inputs.locals.argocd.external_dns.enabled, true)
-  values = {
-    provider = {
-      name = "coredns"
-      coredns = {
-        endpoints = [
-          "http://${dependency.dns.etcd_ip_address}:2379"
-        ]
-        zone = local.inputs.locals.domain
-      }
-    }
-    domainFilters = [
-      local.inputs.locals.domain
-    ]
-    registry   = "txt"
-    txtOwnerId = dependency.k8s.outputs.cluster_name
-  }
 }
 
 include "root" {
@@ -52,7 +36,20 @@ dependency "prometheus_operator_crds" {
 
 inputs = merge(
   {
-    inherited_values = yamlencode(local.values)
+    inherited_values = <<-YAML
+    provider:
+      name: coredns
+      coredns:
+        endpoints:
+          - "http://${dependency.dns.outputs.etcd_ip_address}:2379"
+        zone: ${local.inputs.locals.domain}
+
+    domainFilters:
+      - ${local.inputs.locals.domain}
+
+    registry: txt
+    txtOwnerId: ${dependency.k8s.outputs.cluster_name}
+    YAML
   },
   try(local.inputs.locals.argocd.external_dns.inputs, {})
 )
