@@ -24,7 +24,9 @@ dependency "k8s" {
 dependency "dns" {
   config_path = "${get_path_to_repo_root()}/k8s/dns"
   mock_outputs = {
+    etcd_name          = "etcd"
     etcd_ip_address    = "10.0.0.0"
+    coredns_name       = "coredns"
     coredns_ip_address = "10.0.0.1"
   }
 }
@@ -36,20 +38,24 @@ dependency "prometheus_operator_crds" {
 
 inputs = merge(
   {
-    inherited_values = <<-YAML
-    provider:
-      name: coredns
-      coredns:
-        endpoints:
-          - "http://${dependency.dns.outputs.etcd_ip_address}:2379"
-        zone: ${local.inputs.locals.domain}
-
-    domainFilters:
-      - ${local.inputs.locals.domain}
-
-    registry: txt
-    txtOwnerId: ${dependency.k8s.outputs.cluster_name}
-    YAML
+    inherited_values = yamlencode(
+      {
+        provider = {
+          name = "coredns"
+        }
+        domainFilters = [
+          local.inputs.locals.domain
+        ]
+        registry   = "txt"
+        txtOwnerId = dependency.k8s.outputs.cluster_name
+        env = [
+          {
+            name  = "ETCD_URLS"
+            value = "http://${dependency.dns.outputs.etcd_name}:2379"
+          }
+        ]
+      }
+    )
   },
   try(local.inputs.locals.argocd.external_dns.inputs, {})
 )
