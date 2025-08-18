@@ -42,3 +42,4 @@ local-storage/*
 KUBECONFIG
 **/terragrunt_rendered.json
 tg-*-provider.tf
+**/Corefile

@@ -11,21 +11,32 @@ locals {
       container_path = "/mnt/local-storage"
     }
   ]
+
   k8s = {
-    kubeconfig_path = "${local.root_path}/KUBECONFIG"
-    worker_nodes = [
-      {
-        kubeadm_config_patches = [
-          <<-EOF
+    cluster = {
+      inputs = {
+        kubeconfig_path = "${local.root_path}/KUBECONFIG"
+        worker_nodes = [
+          {
+            kubeadm_config_patches = [
+              <<-EOF
         kind: JoinConfiguration
         nodeRegistration:
           kubeletExtraArgs:
               node-labels: "role=workload"
         EOF
+            ]
+            extra_mounts = local.k8s_extra_mounts
+          }
         ]
-        extra_mounts = local.k8s_extra_mounts
       }
-    ]
+    }
+    dns = {
+      enabled = true
+      inputs = {
+        domain = local.domain
+      }
+    }
   }
   helm = {
     # cilium = {

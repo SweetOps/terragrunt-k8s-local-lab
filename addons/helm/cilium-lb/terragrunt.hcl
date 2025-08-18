@@ -8,7 +8,7 @@ include "root" {
 }
 
 dependency "k8s" {
-  config_path = "${get_path_to_repo_root()}/k8s"
+  config_path = "${get_path_to_repo_root()}/k8s/cluster"
   mock_outputs = {
     endpoint               = "https://test.k8s.dev"
     client_key             = "test_client_key"
