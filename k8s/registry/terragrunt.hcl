@@ -8,7 +8,7 @@ dependency "k8s" {
   skip_outputs = true
 }
 
-inputs = local.inputs.locals.k8s.registry.inputs
+inputs = try(local.inputs.locals.k8s.registry.inputs, {})
 
 feature "initial_apply" {
   default = false
