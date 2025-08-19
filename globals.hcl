@@ -37,6 +37,9 @@ locals {
         domain = local.domain
       }
     }
+    registry = {
+      enabled = true
+    }
   }
   helm = {
     # cilium = {
