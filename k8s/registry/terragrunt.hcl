@@ -1,6 +1,6 @@
 locals {
   inputs  = try(read_terragrunt_config(find_in_parent_folders("globals.hcl")), {})
-  exclude = !feature.initial_apply.value || !try(local.inputs.locals.k8s.dns.enabled, true)
+  exclude = !feature.initial_apply.value || !try(local.inputs.locals.k8s.registry.enabled, true)
 }
 
 dependency "k8s" {
@@ -8,7 +8,7 @@ dependency "k8s" {
   skip_outputs = true
 }
 
-inputs = try(local.inputs.locals.k8s.dns.inputs, {})
+inputs = try(local.inputs.locals.k8s.registry.inputs, {})
 
 feature "initial_apply" {
   default = false

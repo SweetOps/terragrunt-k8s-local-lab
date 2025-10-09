@@ -38,13 +38,13 @@ module "coredns" {
   ports             = var.coredns_ports
 
   mounts = coalescelist(
+    var.coredns_mounts,
     [
       {
         source = local_file.coredns_config.filename
         target = "/Corefile"
       }
-    ],
-    var.coredns_mounts
+    ]
   )
 
   depends_on = [
