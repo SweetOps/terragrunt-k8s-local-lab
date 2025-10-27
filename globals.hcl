@@ -22,7 +22,7 @@ locals {
         worker_nodes = [
           {
             kubeadm_config_patches = [
-              <<-EOF
+        <<-EOF
         kind: JoinConfiguration
         nodeRegistration:
           kubeletExtraArgs:
@@ -33,25 +33,23 @@ locals {
           }
         ]
         containerd_config_patches = [
-          <<-EOF
-        kind: Cluster
-        apiVersion: kind.x-k8s.io/v1alpha4
-        containerdConfigPatches:
-        - |-
-          [plugins."io.containerd.grpc.v1.cri".registry.mirrors."docker.io"]
-            endpoint = [${local.registry_url}]
-          [plugins."io.containerd.grpc.v1.cri".registry.mirrors."registry-1.docker.io"]
-            endpoint = [${local.registry_url}]
-          [plugins."io.containerd.grpc.v1.cri".registry.mirrors."ghcr.io"]
-            endpoint = [${local.registry_url}]
-          [plugins."io.containerd.grpc.v1.cri".registry.mirrors."k8s.gcr.io"]
-            endpoint = [${local.registry_url}]
-          [plugins."io.containerd.grpc.v1.cri".registry.mirrors."quay.io"]
-            endpoint = [${local.registry_url}]
-          [plugins."io.containerd.grpc.v1.cri".registry.mirrors."public.ecr.aws"]
-            endpoint = [${local.registry_url}]
-          [plugins."io.containerd.grpc.v1.cri".registry.configs."${local.registry_endpoint}".tls]
-            insecure_skip_verify = true
+        <<-EOF
+        [plugins."io.containerd.grpc.v1.cri".registry.mirrors."${local.registry_endpoint}"]
+          endpoint = ["${local.registry_url}"]
+        [plugins."io.containerd.grpc.v1.cri".registry.mirrors."docker.io"]
+          endpoint = ["${local.registry_url}"]
+        [plugins."io.containerd.grpc.v1.cri".registry.mirrors."registry-1.docker.io"]
+          endpoint = ["${local.registry_url}"]
+        [plugins."io.containerd.grpc.v1.cri".registry.mirrors."ghcr.io"]
+          endpoint = ["${local.registry_url}"]
+        [plugins."io.containerd.grpc.v1.cri".registry.mirrors."k8s.gcr.io"]
+          endpoint = ["${local.registry_url}"]
+        [plugins."io.containerd.grpc.v1.cri".registry.mirrors."quay.io"]
+          endpoint = ["${local.registry_url}"]
+        [plugins."io.containerd.grpc.v1.cri".registry.mirrors."public.ecr.aws"]
+          endpoint = ["${local.registry_url}"]
+        [plugins."io.containerd.grpc.v1.cri".registry.configs."${local.registry_endpoint}".tls]
+          insecure_skip_verify = true
         EOF
         ]
       }

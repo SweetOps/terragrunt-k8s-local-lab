@@ -49,7 +49,9 @@ variable "networks_advanced" {
       ipv6_address = optional(string)
     }
   )
-  default = null
+  default = {
+    name = "kind"
+  }
 }
 
 variable "mounts" {
@@ -81,7 +83,7 @@ variable "ports" {
   default = [
     {
       internal = 5000
-      external = 5000
+      external = 50000
     }
   ]
 }
