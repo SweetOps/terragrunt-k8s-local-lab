@@ -22,7 +22,7 @@ locals {
         worker_nodes = [
           {
             kubeadm_config_patches = [
-        <<-EOF
+              <<-EOF
         kind: JoinConfiguration
         nodeRegistration:
           kubeletExtraArgs:
@@ -33,7 +33,7 @@ locals {
           }
         ]
         containerd_config_patches = [
-        <<-EOF
+          <<-EOF
         [plugins."io.containerd.grpc.v1.cri".registry.mirrors."${local.registry_endpoint}"]
           endpoint = ["${local.registry_url}"]
         [plugins."io.containerd.grpc.v1.cri".registry.mirrors."docker.io"]
