@@ -5,6 +5,8 @@ locals {
   target_storage_path = "/var/lib/registry"
   registries          = ["k8s.gcr.io", "docker.io", "ghcr.io", "quay.io", "public.ecr.aws"]
   registry_port       = var.ports[0].internal
+  registry_endpoint   = format("%s:%d", module.registry.name, local.registry_port)
+  registry_url        = "http://${local.registry_endpoint}"
 }
 
 resource "local_file" "registry" {
@@ -52,6 +54,7 @@ module "registry" {
 
   name              = var.name
   image             = var.image
+  entrypoint        = var.entrypoint
   command           = var.command
   networks_advanced = var.networks_advanced
   ports             = var.ports
@@ -72,16 +75,3 @@ module "registry" {
   )
 }
 
-resource "kubernetes_config_map_v1" "main" {
-  metadata {
-    name      = "local-registry-hosting"
-    namespace = "kube-public"
-  }
-
-  data = {
-    "localRegistryHosting.v1" = <<-EOF
-host: "${module.registry.name}:${local.registry_port}"
-help: "https://kind.sigs.k8s.io/docs/user/local-registry/"
-EOF
-  }
-}

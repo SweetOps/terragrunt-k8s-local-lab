@@ -13,13 +13,13 @@ variable "image" {
 variable "command" {
   description = "Command to run in the container"
   type        = list(string)
-  default     = []
+  default     = ["serve", "/etc/zot/config.json"]
 }
 
 variable "entrypoint" {
   description = "Entrypoint for the container"
   type        = list(string)
-  default     = []
+  default     = ["/usr/local/bin/zot-linux-arm64"]
 }
 
 variable "env" {
