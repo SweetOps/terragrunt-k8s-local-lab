@@ -17,3 +17,16 @@ resource "kubernetes_storage_class_v1" "main" {
   volume_binding_mode    = "WaitForFirstConsumer"
   allow_volume_expansion = true
 }
+
+resource "kubernetes_config_map_v1" "main" {
+  metadata {
+    name      = "local-registry-hosting"
+    namespace = "kube-public"
+  }
+
+  data = {
+    "localRegistryHosting.v1" = <<-EOF
+host: "${var.registry_endpoint}"
+EOF
+  }
+}

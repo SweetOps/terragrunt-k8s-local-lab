@@ -37,6 +37,11 @@ locals {
         domain = local.domain
       }
     }
+    registry = {
+      inputs = {
+        name = "registry"
+      }
+    }
   }
   helm = {
     # cilium = {
