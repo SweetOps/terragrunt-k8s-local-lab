@@ -19,10 +19,11 @@ dependency "k8s" {
 dependency "registry" {
   config_path = "${get_path_to_repo_root()}/k8s/registry"
   mock_outputs = {
-    name       = "test-registry"
-    ip_address = "10.0.0.1"
-    url        = "http://10.0.0.1:5000"
-    endpoint   = "10.0.0.1:5000"
+    name                    = "test-registry"
+    ip_address              = "10.0.0.1"
+    url                     = "http://10.0.0.1:5000"
+    endpoint                = "10.0.0.1:5000"
+    containerd_config_patch = "mock"
   }
 }
 

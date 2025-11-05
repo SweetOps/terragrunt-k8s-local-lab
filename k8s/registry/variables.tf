@@ -87,3 +87,18 @@ variable "ports" {
     }
   ]
 }
+
+variable "mirrored_registries" {
+  description = "List of registries to mirror"
+  type        = list(string)
+  default = [
+    "docker.io",
+    "ghcr.io",
+    "k8s.gcr.io",
+    "oci.external-secrets.io",
+    "public.ecr.aws",
+    "quay.io",
+    "registry-1.docker.io",
+    "registry.k8s.io"
+  ]
+}
