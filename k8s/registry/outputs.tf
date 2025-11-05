@@ -17,3 +17,15 @@ output "endpoint" {
   description = "Endpoint of the Zot-registry"
   value       = local.registry_endpoint
 }
+
+output "containerd_config_patch" {
+  description = "Containerd config patch"
+  value       = <<-EOF
+%{for r in var.mirrored_registries}
+[plugins."io.containerd.grpc.v1.cri".registry.mirrors."${r}"]
+  endpoint = ["${local.registry_url}/v2/${r}"]
+%{endfor}
+[plugins."io.containerd.grpc.v1.cri".registry.configs."${local.registry_endpoint}".tls]
+  insecure_skip_verify = true
+EOF
+}
