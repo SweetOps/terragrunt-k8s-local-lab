@@ -6,7 +6,7 @@ variable "cluster_name" {
 
 variable "node_image" {
   type        = string
-  default     = "kindest/node:v1.34.0"
+  default     = "kindest/node:v1.31.1"
   description = "Node image to use for the cluster"
 }
 
