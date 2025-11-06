@@ -5,8 +5,10 @@ resource "kind_cluster" "main" {
   kubeconfig_path = var.kubeconfig_path
 
   kind_config {
-    kind        = "Cluster"
-    api_version = "kind.x-k8s.io/v1alpha4"
+    kind           = "Cluster"
+    api_version    = "kind.x-k8s.io/v1alpha4"
+    runtime_config = var.runtime_config
+    feature_gates  = var.feature_gates
 
     node {
       role                   = "control-plane"

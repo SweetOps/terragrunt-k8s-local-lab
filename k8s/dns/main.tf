@@ -6,6 +6,9 @@ resource "local_file" "coredns_config" {
         path /skydns
         endpoint http://${module.etcd.name}:2379
     }
+    header {
+        response set ra
+    }
     forward . 8.8.8.8
     log
     errors

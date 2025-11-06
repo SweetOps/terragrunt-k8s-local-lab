@@ -6,7 +6,7 @@ variable "cluster_name" {
 
 variable "node_image" {
   type        = string
-  default     = "kindest/node:v1.31.1"
+  default     = "kindest/node:v1.34.0"
   description = "Node image to use for the cluster"
 }
 
@@ -20,6 +20,18 @@ variable "containerd_config_patches" {
   type        = list(string)
   default     = []
   description = "Containerd config patches"
+}
+
+variable "feature_gates" {
+  type        = map(string)
+  default     = {}
+  description = "Kubeadm feature gates"
+}
+
+variable "runtime_config" {
+  type        = map(string)
+  default     = {}
+  description = "Kubeadm runtime configuration options"
 }
 
 variable "control_plane_node" {
