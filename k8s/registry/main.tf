@@ -33,7 +33,7 @@ resource "local_file" "registry" {
           enable = true
           registries = [
             for r in var.mirrored_registries : {
-              urls      = formatlist("https://%s", r, "${r}/v2/")
+              urls      = formatlist("https://%s", [r, "${r}/v2/"])
               onDemand  = true
               tlsVerify = true
 
