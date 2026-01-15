@@ -5,7 +5,7 @@ locals {
   target_storage_path = "/var/lib/registry"
   registry_port       = var.ports[0].internal
   registry_endpoint   = format("%s:%d", module.registry.name, local.registry_port)
-  registry_url        = "http://${local.registry_endpoint}"
+  registry_url        = "https://${local.registry_endpoint}"
 }
 
 resource "local_file" "registry" {
@@ -17,6 +17,10 @@ resource "local_file" "registry" {
       http = {
         address = "0.0.0.0"
         port    = local.registry_port
+        tls = {
+          cert = format("%s/%s", local.target_storage_path, local.cert_file_name)
+          key  = format("%s/%s", local.target_storage_path, local.key_file_name)
+        }
       }
       extensions = {
         ui = {
@@ -29,14 +33,14 @@ resource "local_file" "registry" {
           enable = true
           registries = [
             for r in var.mirrored_registries : {
-              urls      = ["https://${r}", "https://${r}/v2/"]
+              urls      = formatlist("https://%s", r, "${r}/v2/")
               onDemand  = true
               tlsVerify = true
 
               content = [
                 {
                   prefix      = "**"
-                  destination = "${r}"
+                  destination = r
                 }
               ]
             }
@@ -55,6 +59,8 @@ module "registry" {
   image             = var.image
   entrypoint        = var.entrypoint
   command           = var.command
+  restart           = var.restart
+  privileged        = var.privileged
   networks_advanced = var.networks_advanced
   ports             = var.ports
   env               = var.env
@@ -73,4 +79,3 @@ module "registry" {
     ]
   )
 }
-

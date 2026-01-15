@@ -1,7 +1,8 @@
 locals {
   root_path           = get_repo_root()
-  ca_cert_path        = "${local.root_path}/.certs/rootCA.pem"
-  key_cert_path       = "${local.root_path}/.certs/rootCA-key.pem"
+  cert_path           = "${local.root_path}/.certs"
+  ca_cert_path        = "${local.cert_path}/rootCA.pem"
+  key_cert_path       = "${local.cert_path}/rootCA-key.pem"
   domain              = "k8s.dev.local"
   cluster_issuer_name = "own"
 
@@ -9,6 +10,10 @@ locals {
     {
       host_path      = "${local.root_path}/local-storage"
       container_path = "/mnt/local-storage"
+    },
+    {
+      host_path      = local.ca_cert_path
+      container_path = "/etc/ssl/certs/rootCA.pem"
     }
   ]
 
@@ -40,6 +45,10 @@ locals {
     registry = {
       inputs = {
         name = "registry"
+        ca_path = {
+          crt = local.ca_cert_path
+          key = local.key_cert_path
+        }
       }
     }
   }
@@ -57,8 +66,10 @@ locals {
     cert_manager = {
       inputs = {
         cluster_issuer_name = local.cluster_issuer_name
-        tls_crt             = fileexists(local.ca_cert_path) ? base64encode(file(local.ca_cert_path)) : "ci"
-        tls_key             = fileexists(local.key_cert_path) ? base64encode(file(local.key_cert_path)) : "ci"
+        tls_path = {
+          crt = local.ca_cert_path
+          key = local.key_cert_path
+        }
       }
     }
     clickhouse_operator = {

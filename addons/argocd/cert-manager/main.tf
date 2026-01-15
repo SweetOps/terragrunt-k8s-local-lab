@@ -13,8 +13,8 @@ locals {
       }
       type = "kubernetes.io/tls"
       data = {
-        "tls.crt" = var.tls_crt
-        "tls.key" = var.tls_key
+        "tls.crt" = base64encode(file(var.tls_path.crt))
+        "tls.key" = base64encode(file(var.tls_path.key))
       }
     }
 

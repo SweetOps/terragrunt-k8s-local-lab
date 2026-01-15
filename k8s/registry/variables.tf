@@ -7,7 +7,7 @@ variable "name" {
 variable "image" {
   description = "Docker image to use for the container"
   type        = string
-  default     = "ghcr.io/project-zot/zot:v2.1.7"
+  default     = "ghcr.io/project-zot/zot:v2.1.12"
 }
 
 variable "command" {
@@ -82,7 +82,7 @@ variable "ports" {
   )
   default = [
     {
-      internal = 5000
+      internal = 443
       external = 50000
     }
   ]
@@ -101,4 +101,20 @@ variable "mirrored_registries" {
     "registry-1.docker.io",
     "registry.k8s.io"
   ]
+}
+
+variable "domain" {
+  type        = string
+  description = "Domain name for the registry"
+  default     = "k8s.dev.local"
+}
+
+variable "ca_path" {
+  type = object(
+    {
+      crt = string
+      key = string
+    }
+  )
+  description = "Paths to the TLS certificate (CA and key) files"
 }

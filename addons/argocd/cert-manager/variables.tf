@@ -87,12 +87,12 @@ variable "cluster_issuer_name" {
   default     = "own"
 }
 
-variable "tls_crt" {
-  description = "Path to the TLS certificate"
-  type        = string
-}
-
-variable "tls_key" {
-  description = "Path to the TLS key"
-  type        = string
+variable "tls_path" {
+  type = object(
+    {
+      crt = string
+      key = string
+    }
+  )
+  description = "Paths to the TLS certificate (CA and key) files"
 }
