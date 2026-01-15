@@ -43,3 +43,7 @@ KUBECONFIG
 **/terragrunt_rendered.json
 tg-*-provider.tf
 **/Corefile
+
+# Ignore built charts
+**/*.tgz
+**/Chart.*

@@ -1,6 +1,7 @@
 variable "chart" {
   type        = string
   description = "The name of the chart to install"
+  default     = null
 }
 
 variable "repository" {
