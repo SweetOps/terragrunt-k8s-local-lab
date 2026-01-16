@@ -71,21 +71,17 @@ variable "mounts" {
 
 variable "ports" {
   description = "List of ports to expose from the container"
-  type = list(
-    object(
-      {
-        internal = number
-        external = number
-        protocol = optional(string, "tcp")
-      }
-    )
-  )
-  default = [
+  type = object(
     {
-      internal = 443
-      external = 50000
+      internal = number
+      external = number
+      protocol = optional(string, "tcp")
     }
-  ]
+  )
+  default = {
+    internal = 443
+    external = 50000
+  }
 }
 
 variable "mirrored_registries" {

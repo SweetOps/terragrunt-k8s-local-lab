@@ -2,7 +2,7 @@ generate "provider" {
   path      = "tg-argocd-provider.tf"
   if_exists = "overwrite_terragrunt"
   contents  = <<-EOF
-data "kubernetes_secret" "argocd" {
+data "kubernetes_secret_v1" "argocd" {
   metadata {
     name      = "argocd-initial-admin-secret"
     namespace = "argocd"
@@ -24,7 +24,7 @@ CA
 
 provider "argocd" {
   username                    = "admin"
-  password                    = data.kubernetes_secret.argocd.data.password
+  password                    = data.kubernetes_secret_v1.argocd.data.password
   plain_text                  = true
   port_forward_with_namespace = "argocd"
 

@@ -25,7 +25,7 @@ variable "chart" {
 variable "chart_version" {
   type        = string
   description = "Specify the exact chart version to install. If this is not specified, the latest version is installed."
-  default     = "1.17.2"
+  default     = "1.18.6"
 }
 
 variable "override_values" {

@@ -45,11 +45,6 @@ dependency "cilium" {
   skip_outputs = true
 }
 
-dependency "cilium_lb" {
-  config_path  = "${get_path_to_repo_root()}/addons/helm/cilium-lb"
-  skip_outputs = true
-}
-
 inputs = try(local.inputs.locals.helm.argocd.inputs, {})
 
 feature "initial_apply" {

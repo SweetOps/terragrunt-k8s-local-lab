@@ -1,0 +1,28 @@
+---
+apiVersion: cilium.io/v2alpha1
+kind: CiliumLoadBalancerIPPool
+metadata:
+  name: lb-pool
+  annotations:
+    argocd.argoproj.io/sync-wave: "10"
+spec:
+  blocks:
+{{- with .Values.loadBalancerIPPools }}
+{{- toYaml . | nindent 4 }}
+{{- end }}
+---
+apiVersion: cilium.io/v2alpha1
+kind: CiliumL2AnnouncementPolicy
+metadata:
+  name: lb-policy
+  annotations:
+    argocd.argoproj.io/sync-wave: "11"
+spec:
+  externalIPs: false
+  loadBalancerIPs: true
+  interfaces:
+    - "^eth[0-9]+"
+  nodeSelector:
+    matchExpressions:
+      - key: node-role.kubernetes.io/control-plane
+        operator: DoesNotExist
