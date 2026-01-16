@@ -1,11 +1,14 @@
 locals {
-  path                = abspath(path.module)
-  config_file         = "config.json"
-  storage_path        = "${local.path}/../../local-storage/registry"
-  target_storage_path = "/var/lib/registry"
-  registry_port       = var.ports[0].internal
-  registry_endpoint   = format("%s:%d", module.registry.name, local.registry_port)
-  registry_url        = "https://${local.registry_endpoint}"
+  path                   = abspath(path.module)
+  config_file            = "config.json"
+  storage_path           = "${local.path}/../../local-storage/registry"
+  target_storage_path    = "/var/lib/registry"
+  registry_port          = var.ports.internal
+  registry_host_port     = var.ports.external
+  registry_endpoint      = format("%s:%d", module.registry.name, local.registry_port)
+  registry_host_endpoint = format("%s:%d", "localhost", local.registry_host_port)
+  registry_url           = "https://${local.registry_endpoint}"
+  registry_host_url      = "https://${local.registry_host_endpoint}"
 }
 
 resource "local_file" "registry" {
@@ -62,7 +65,7 @@ module "registry" {
   restart           = var.restart
   privileged        = var.privileged
   networks_advanced = var.networks_advanced
-  ports             = var.ports
+  ports             = [var.ports]
   env               = var.env
 
   mounts = coalescelist(

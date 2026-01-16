@@ -104,3 +104,13 @@ variable "k8s_cluster_name" {
   type        = string
   default     = "dev"
 }
+
+variable "registry_endpoints" {
+  type = object(
+    {
+      host       = string
+      in_cluster = string
+    }
+  )
+  description = "A map of registry endpoints"
+}

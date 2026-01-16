@@ -18,6 +18,16 @@ output "endpoint" {
   value       = local.registry_endpoint
 }
 
+output "host_endpoint" {
+  description = "Host endpoint of the Zot-registry"
+  value       = local.registry_host_endpoint
+}
+
+output "host_url" {
+  description = "Host URL of the Zot-registry"
+  value       = local.registry_host_url
+}
+
 output "containerd_config_patch" {
   description = "Containerd config patch"
   value       = <<-EOF

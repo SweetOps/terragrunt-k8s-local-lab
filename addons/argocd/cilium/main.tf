@@ -1,11 +1,11 @@
 locals {
   docker_subnet        = local.docker_ipv4_networks[0].subnet
+  chart_name           = "cilium"
   chart_version_suffix = time_static.chart_version_suffix.unix
   chart_version        = format("%s-%s", var.chart_version, local.chart_version_suffix)
   chart_dir            = dirname(local_file.rendered_chart_yaml.filename)
-  local_repository     = "oci://localhost:50000/helm-charts"
-  local_chart_name     = "cilium"
-  repository           = "registry:443/helm-charts"
+  host_repository      = "oci://${var.registry_endpoints.host}/helm-charts"
+  repository           = "${var.registry_endpoints.in_cluster}/helm-charts"
 
   docker_ipv4_networks = [
     for cidr in data.docker_network.main.ipam_config : cidr
@@ -16,7 +16,7 @@ locals {
     apiVersion  = "v2"
     appVersion  = "1.0.0"
     description = "A Helm chart for Cilium"
-    name        = local.local_chart_name
+    name        = local.chart_name
     version     = local.chart_version
     dependencies = [
       {
@@ -87,15 +87,20 @@ resource "terraform_data" "push_chart" {
 
   provisioner "local-exec" {
     command = <<EOF
+    set -e
+
+    rm -f ${local.chart_dir}/*.tgz
     helm package ${local.chart_dir} -u -d ${local.chart_dir}
-    mv ${local.chart_dir}/*.tgz ${local.chart_dir}/${local.local_chart_name}.tgz
-    helm push ${local.chart_dir}/${local.local_chart_name}.tgz ${local.local_repository}
-    rm ${local.chart_dir}/${local.local_chart_name}.tgz
+    mv ${local.chart_dir}/*.tgz ${local.chart_dir}/${local.chart_name}.tgz
+    helm push ${local.chart_dir}/${local.chart_name}.tgz ${local.host_repository}
+    rm ${local.chart_dir}/${local.chart_name}.tgz
     EOF
   }
 
   triggers_replace = [
-    time_static.chart_version_suffix.unix
+    time_static.chart_version_suffix.unix,
+    local.chart_version,
+    local.host_repository
   ]
 }
 
@@ -104,7 +109,7 @@ data "docker_network" "main" {
 }
 
 resource "argocd_repository" "main" {
-  name       = local.local_chart_name
+  name       = local.chart_name
   repo       = local.repository
   type       = "helm"
   insecure   = true
