@@ -25,10 +25,10 @@ dependency "k8s" {
 dependency "registry" {
   config_path = "${get_path_to_repo_root()}/k8s/registry"
   mock_outputs = {
-    host_url = "https://test.k8s.dev"
-    url = "https://test.k8s.dev"
+    host_url      = "https://test.k8s.dev"
+    url           = "https://test.k8s.dev"
     host_endpoint = "test.k8s.dev:50000"
-    endpoint = "test.k8s.dev:443"
+    endpoint      = "test.k8s.dev:443"
   }
 }
 
@@ -44,8 +44,8 @@ inputs = merge(
     k8s_api_server_port = dependency.k8s.outputs.api_server_port
     k8s_pod_subnet      = dependency.k8s.outputs.pod_subnet
     k8s_cluster_name    = dependency.k8s.outputs.cluster_name
-    registry_endpoints  = {
-      host = dependency.registry.outputs.host_endpoint
+    registry_endpoints = {
+      host       = dependency.registry.outputs.host_endpoint
       in_cluster = dependency.registry.outputs.endpoint
     }
   },
