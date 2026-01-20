@@ -3,7 +3,7 @@ locals {
   cert_path           = "${local.root_path}/.certs"
   ca_cert_path        = "${local.cert_path}/rootCA.pem"
   key_cert_path       = "${local.cert_path}/rootCA-key.pem"
-  domain              = "k8s.dev.local"
+  domain              = "k8s.dev.test"
   cluster_issuer_name = "own"
 
   k8s_extra_mounts = [

@@ -89,7 +89,7 @@ variable "retry" {
 
 variable "domain" {
   type        = string
-  default     = "k8s.dev.local"
+  default     = "k8s.dev.test"
   description = "Domain to use for the ingress"
 }
 

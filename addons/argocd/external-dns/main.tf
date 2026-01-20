@@ -1,7 +1,8 @@
 locals {
   values = {
-    fullnameOverride = "external-dns"
-    policy           = "sync"
+    fullnameOverride   = "external-dns"
+    policy             = "sync"
+    triggerLoopOnEvent = true
 
     serviceMonitor = {
       enabled = true
