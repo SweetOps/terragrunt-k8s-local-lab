@@ -102,7 +102,7 @@ variable "mirrored_registries" {
 variable "domain" {
   type        = string
   description = "Domain name for the registry"
-  default     = "k8s.dev.local"
+  default     = "k8s.dev.test"
 }
 
 variable "ca_path" {
